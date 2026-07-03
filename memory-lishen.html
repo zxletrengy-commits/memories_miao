@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>黎深的回忆 · Memory Archive</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body data-character="lishen" class="fade-in">
+
+  <canvas id="stars"></canvas>
+
+  <div class="top-bar">
+    <button class="back-btn" onclick="goTo('cafe.html?char=lishen')">‹ BACK</button>
+    <button class="music-btn" id="musicBtn" onclick="toggleMusic()">
+      <span class="icon">♪</span><span class="label">ON</span>
+    </button>
+  </div>
+  <audio id="bgm" src="assets/bgm.mp3" loop></audio>
+
+  <div class="scaled-page">
+    <header class="memory-header">
+      <h1>黎深 <span class="en">Zayne</span></h1>
+      <p class="quote">"无论未来多么深邃，我都会在你身边。"</p>
+    </header>
+
+    <div class="fragment-grid">
+      <div class="fragment" onclick="openFragment(this)"
+           data-title="第一次相遇"
+           data-text="在这里写下你们第一次相遇的场景和台词。">
+        <div class="icon">✦</div>
+        <div class="frag-title">第一次相遇</div>
+      </div>
+
+      <div class="fragment" onclick="openFragment(this)"
+           data-title="雪山的约定"
+           data-text="在这里写下你印象最深的一段剧情。">
+        <div class="icon">✦</div>
+        <div class="frag-title">雪山的约定</div>
+      </div>
+
+      <div class="fragment" onclick="openFragment(this)"
+           data-title="专属语音"
+           data-text="在这里粘贴你最喜欢的一句专属语音文本。">
+        <div class="icon">✦</div>
+        <div class="frag-title">专属语音</div>
+      </div>
+
+      <div class="fragment" onclick="openFragment(this)"
+           data-title="写给他的话"
+           data-text="在这里写下你想对他说的话。">
+        <div class="icon">✦</div>
+        <div class="frag-title">写给他的话</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="fragOverlay" onclick="if(event.target===this) closeFragment()">
+    <div class="modal-box">
+      <h3 class="modal-title"></h3>
+      <p class="modal-text"></p>
+      <button class="enter-btn small modal-close" onclick="closeFragment()">关闭</button>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

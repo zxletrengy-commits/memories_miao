@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>想见的人 · Memory Archive</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Inter:wght@300&family=Noto+Serif+SC:wght@300;400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="fade-in">
+
+  <canvas id="stars"></canvas>
+
+  <div class="top-bar">
+    <button class="back-btn" onclick="goTo('index.html')">‹ BACK</button>
+    <button class="music-btn" id="musicBtn" onclick="toggleMusic()">
+      <span class="icon">♪</span>
+      <span class="label">ON</span>
+    </button>
+  </div>
+
+  <audio id="bgm" src="assets/bgm.mp3" loop></audio>
+
+  <div class="select-scene">
+    <div class="scene-prompt">
+      <p class="prompt-en fade-layer" style="animation-delay: 0.2s">Who would you like to meet today?</p>
+      <h1 class="prompt-cn fade-layer" style="animation-delay: 0.5s">你想见到的他</h1>
+    </div>
+
+    <div class="scene-choices fade-layer" style="animation-delay: 0.9s">
+      <button class="choice-card" onclick="goTo('cafe.html?char=qiyu')" data-char="qiyu">
+        <div class="choice-avatar qiyu-avatar"></div>
+        <div class="choice-info">
+          <span class="choice-name">祁煜</span>
+          <span class="choice-en">Rafayel</span>
+        </div>
+        <span class="choice-arrow">→</span>
+      </button>
+
+      <button class="choice-card" onclick="goTo('cafe.html?char=lishen')" data-char="lishen">
+        <div class="choice-avatar lishen-avatar"></div>
+        <div class="choice-info">
+          <span class="choice-name">黎深</span>
+          <span class="choice-en">Zayne</span>
+        </div>
+        <span class="choice-arrow">→</span>
+      </button>
+
+      <button class="choice-card both-card" onclick="goTo('cafe.html?char=both')">
+        <div class="choice-avatars-group">
+          <div class="choice-avatar small-avatar qiyu-avatar"></div>
+          <div class="choice-avatar small-avatar lishen-avatar"></div>
+        </div>
+        <div class="choice-info">
+          <span class="choice-name">两个都要！</span>
+          <span class="choice-en">Why not both?</span>
+        </div>
+        <span class="choice-arrow">→</span>
+      </button>
+    </div>
+
+    <footer class="page-footer" style="animation-delay: 1.3s">
+      <p class="brand">✦ MEMORY ARCHIVE ✦</p>
+    </footer>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

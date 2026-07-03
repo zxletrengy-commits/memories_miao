@@ -1,0 +1,62 @@
+/**
+ * characters-inline.js
+ * Inline character data for file:// protocol fallback.
+ * This is the same data as characters.json but as a JS object.
+ */
+const CHARACTER_DATA = {
+  "qiyu": {
+    "id": "qiyu",
+    "displayName": "祁煜",
+    "displayNameEn": "Rafayel",
+    "color": "#6ba3a0",
+    "assetPath": "assets/cafe_alot/qiyu/",
+    "spriteType": "gif",
+    "availableStates": {
+      "sleep": { "img": "打盹.gif", "pos": { "x": 22, "y": 29 }, "label": "休息中" },
+      "plant": { "img": "呜呜呜.gif", "pos": { "x": 78, "y": 35 }, "label": "玩耍中" },
+      "clean": { "img": "来咯.gif", "pos": { "x": 28, "y": 60 }, "label": "清洁中" },
+      "relax": { "img": "有了.gif", "pos": { "x": 18, "y": 52 }, "label": "放松中" },
+      "lobby": { "img": "打盹.gif", "pos": { "x": 50, "y": 86 }, "label": "接待中" }
+    },
+    "preferredZones": ["sleep", "plant", "clean", "relax", "lobby"],
+    "dragGifs": { "left": "左拎猫猫.gif", "center": "求关注.gif", "right": "右拎猫猫.gif" },
+    "dialoguePool": [
+      "你终于来了…我等了好久。",
+      "今天海风很舒服，你感觉到了吗？",
+      "想听我哼首歌吗？",
+      "这幅画，还差一笔——你。",
+      "喂，别一直盯着我看啊。",
+      "这里的咖啡…没你泡的好喝。",
+      "下次一起去海边吧？",
+      "你身上有阳光的味道。"
+    ]
+  },
+  "lishen": {
+    "id": "lishen",
+    "displayName": "黎深",
+    "displayNameEn": "Zayne",
+    "color": "#7b8db3",
+    "assetPath": "assets/cafe_alot/lishen/",
+    "spriteType": "pixel",
+    "availableStates": {
+      "idle":    { "img": null, "pos": { "x": 28, "y": 60 }, "label": "悠闲中" },
+      "coffee":  { "img": null, "pos": { "x": 50, "y": 86 }, "label": "接待中" },
+      "laptop":  { "img": null, "pos": { "x": 50, "y": 55 }, "label": "办公" },
+      "reading": { "img": null, "pos": { "x": 88, "y": 28 }, "label": "看书" },
+      "plant":   { "img": null, "pos": { "x": 80, "y": 35 }, "label": "玩耍中" },
+      "sleep":   { "img": null, "pos": { "x": 22, "y": 29 }, "label": "休息中" }
+    },
+    "preferredZones": ["sleep", "plant", "clean", "relax", "lobby"],
+    "dragGifs": null,
+    "dialoguePool": [
+      "你来了。今天还顺利吗？",
+      "咖啡要凉了。",
+      "外面下雪了…靠近一点吧。",
+      "别太累，休息一下。",
+      "我在看你的消息。每一条。",
+      "想听听我今天遇到的事吗？",
+      "这份报告…算了，晚点再写。",
+      "和你在一起的时间，总是过得太快。"
+    ]
+  }
+};

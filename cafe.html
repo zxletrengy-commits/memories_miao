@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="mobile-web-app-capable" content="yes">
+  <title>喵喵屋 · Memory Archive</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Inter:wght@300;400&family=Noto+Serif+SC:wght@300;400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="cafe-body fade-in">
+
+  <!-- 顶部栏 -->
+  <div class="top-bar">
+    <button class="back-btn" onclick="goTo('select.html')">‹ BACK</button>
+    <button class="music-btn" id="musicBtn" onclick="toggleMusic()">
+      <span class="icon">♪</span>
+      <span class="label">ON</span>
+    </button>
+  </div>
+
+  <audio id="bgm" src="assets/bgm.mp3" loop></audio>
+
+  <!-- ====== 喵喵屋场景 ====== -->
+  <div class="cafe-scene" id="cafeScene">
+
+    <!-- 场景背景层（真图） -->
+    <div class="cafe-bg" id="cafeBg">
+      <!-- 背景图片由JS根据时间切换 -->
+      <div class="bg-image-layer" id="bgImageLayer"></div>
+      
+      <!-- 雨窗叠加效果 -->
+      <div class="rain-overlay" id="rainOverlay" style="display:none;"></div>
+
+      <!-- 浮尘效果（极淡，全屏） -->
+      <div class="dust-particles" id="dustParticles"></div>
+      
+      <!-- 太阳光晕（二楼暖光斑） -->
+      <div class="sun-glow" id="sunGlow"></div>
+
+      <!-- 白天背景视频 -->
+      <video class="bg-video-layer" id="bgVideoLayer" src="assets/cafe_alot/background/day.mp4" autoplay loop muted playsinline style="display:none;"></video>
+      
+      <!-- 接待区装饰层（透明底PNG） -->
+      <img class="lobby-decoration" src="assets/cafe_alot/background/接待区.png" alt="接待区" style="left:40%; top:59%; width:250px; height:230px; transform:none; bottom:auto; max-width:none;">
+    </div>
+
+    <!-- 拖拽热区（四个功能区） -->
+    <div class="drop-zones" id="dropZones">
+      <!-- 休息区 -->
+      <div class="drop-zone" data-zone="sleep" style="left:35.8%; top:16.6%; width:25.8%; height:20.2%;">
+        <span class="zone-label">休息区</span>
+      </div>
+      <!-- 娱乐区 -->
+      <div class="drop-zone" data-zone="plant" style="left:51.2%; top:47.3%; width:9.6%; height:22.6%;">
+        <span class="zone-label">娱乐区</span>
+      </div>
+      <!-- 清洁区 -->
+      <div class="drop-zone" data-zone="clean" style="left:41.1%; top:47.0%; width:8.5%; height:17.0%;">
+        <span class="zone-label">清洁区</span>
+      </div>
+      <!-- 放松区 -->
+      <div class="drop-zone" data-zone="relax" style="left:42.6%; top:64.5%; width:113px; height:100px;">
+        <span class="zone-label">放松区</span>
+      </div>
+      <!-- 接待区 -->
+      <div class="drop-zone" data-zone="lobby" style="left:34.1%; top:80.7%; width:31.3%; height:17.9%;">
+        <span class="zone-label">接待区</span>
+      </div>
+    </div>
+
+    <!-- 角色锚点容器 -->
+    <div class="char-layer" id="charLayer"></div>
+
+    <!-- 对话气泡层 -->
+    <div class="bubble-layer" id="bubbleLayer"></div>
+
+    <!-- 场景右下角氛围 -->
+    <div class="cafe-atmosphere">
+      <span class="cafe-time" id="cafeTime">--:--</span>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+
+  <!-- World 全局状态 -->
+  <script src="core/world.js"></script>
+
+  <!-- 角色数据（file://协议兼容） -->
+  <script src="data/characters-inline.js"></script>
+
+  <!-- Managers -->
+  <script src="core/managers/SceneManager.js"></script>
+  <script src="core/managers/UIManager.js"></script>
+  <script src="core/managers/MemoryManager.js"></script>
+  <script src="core/managers/CharacterPixel.js"></script>
+  <script src="core/managers/CharacterManager.js"></script>
+
+  <script src="editor-mode.js"></script>
+  <script>
+    // 初始化喵喵屋
+    document.addEventListener('DOMContentLoaded', async () => {
+      World.setScene('cafe');
+
+      // 解析角色参数
+      const charParam = new URLSearchParams(window.location.search).get('char') || 'qiyu';
+      const charKeys  = charParam === 'both' ? ['qiyu', 'lishen'] : [charParam];
+
+      // 初始化各 Manager
+      SceneManager.init();
+      UIManager.initMusic();
+      MemoryManager.init();
+      await CharacterManager.init(charKeys);
+
+      // 点击空白处收起图标
+      document.getElementById('cafeScene').addEventListener('click', (e) => {
+        if (!e.target.closest('.chibi-sprite') &&
+            !e.target.closest('.action-icons') &&
+            !e.target.closest('.drop-zone')) {
+          UIManager.closeAllIcons();
+        }
+      });
+
+      // 手机端第一次点击请求全屏
+      if (/Mobi|Android/i.test(navigator.userAgent)) {
+        document.addEventListener('click', function requestFS() {
+          const el = document.documentElement;
+          if (el.requestFullscreen) {
+            el.requestFullscreen().catch(() => {});
+          } else if (el.webkitRequestFullscreen) {
+            el.webkitRequestFullscreen();
+          }
+          document.removeEventListener('click', requestFS);
+        }, { once: true });
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Loading · Memory Archive</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="loading-page fade-in">
+
+  <canvas id="stars"></canvas>
+
+  <div class="loading-container">
+    <div class="flip-card-wrapper">
+      <div class="flip-card" id="flipCard">
+        <div class="flip-card-inner">
+          <div class="flip-card-face flip-front" id="flipFront"></div>
+          <div class="flip-card-face flip-back" id="flipBack"></div>
+        </div>
+      </div>
+    </div>
+
+    <p class="loading-text">正在连接记忆坐标<span class="dots"><span>.</span><span>.</span><span>.</span></span></p>
+
+    <div class="loading-bar">
+      <div class="loading-bar-fill" id="loadingFill"></div>
+      <div class="loading-dot" id="loadingDot"></div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
