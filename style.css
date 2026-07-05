@@ -175,17 +175,24 @@ html, body { overflow: hidden; height: 100%; }
   z-index: 10;
 }
 
+.top-bar-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
 .back-btn, .music-btn {
   background: rgba(255, 255, 255, 0.06);
   border: 1px solid rgba(255, 255, 255, 0.15);
   color: var(--text);
-  border-radius: 20px;
-  padding: 8px 16px;
+  border-radius: 16px;
+  padding: 6px 12px;
   cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
   backdrop-filter: blur(6px);
+  font-size: 13px;
 }
 
 .music-btn.off .icon { opacity: 0.4; }
@@ -636,16 +643,64 @@ html, body { overflow: hidden; height: 100%; }
 }
 
 /* ====== 喵喵屋场景 ====== */
+/* Mobile-first：.cafe-scene 锁定竖屏比例（背景图原始尺寸 1900x2550），
+   在任何设备上都按此比例渲染，桌面端超出比例的部分用 .cafe-body 背景色做
+   左右/上下留白（letterbox），保证热区与角色的百分比坐标在所有设备上
+   对应画面里同一个位置。 */
 .cafe-body {
+  --cafe-topbar-height: 44px;
+  --cafe-safe-top: max(env(safe-area-inset-top, 0px), 0px);
+  --cafe-safe-bottom: max(env(safe-area-inset-bottom, 0px), 0px);
   overflow: hidden;
   background: #1a1410;
+  width: 100vw;
+  min-height: 100vh;
+  min-height: 100dvh;
 }
+
+.cafe-top-bar {
+  top: 0;
+  left: 0;
+  right: 0;
+  padding: calc(var(--cafe-safe-top) + 3px) 12px 3px;
+  height: calc(var(--cafe-topbar-height) + var(--cafe-safe-top));
+  align-items: center;
+  background: rgba(16, 12, 10, 0.88);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  z-index: 30;
+}
+
+.top-bar-time {
+  min-width: 58px;
+  padding: 6px 10px;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(248, 246, 242, 0.86);
+  font-family: "Inter", sans-serif;
+  font-size: 13px;
+  line-height: 1;
+  text-align: center;
+}
+
 
 .cafe-scene {
   position: relative;
-  width: 100vw;
-  height: 100vh;
+  /* 用 min() 直接计算实际宽高，两者始终保持 1900:2550 比例，
+     比依赖 aspect-ratio 属性更可靠（aspect-ratio 在 width/height 都是具体数值时不会生效） */
+  width: min(100vw, calc((100dvh - var(--cafe-topbar-height) - var(--cafe-safe-top) - var(--cafe-safe-bottom)) * 1900 / 2550));
+  height: min(calc(100dvh - var(--cafe-topbar-height) - var(--cafe-safe-top) - var(--cafe-safe-bottom)), calc(100vw * 2550 / 1900));
+  margin: calc(var(--cafe-topbar-height) + var(--cafe-safe-top)) auto var(--cafe-safe-bottom);
   overflow: hidden;
+}
+
+@supports not (height: 100dvh) {
+  .cafe-scene {
+    width: min(100vw, calc((100vh - var(--cafe-topbar-height) - var(--cafe-safe-top) - var(--cafe-safe-bottom)) * 1900 / 2550));
+    height: min(calc(100vh - var(--cafe-topbar-height) - var(--cafe-safe-top) - var(--cafe-safe-bottom)), calc(100vw * 2550 / 1900));
+  }
 }
 
 /* -- 场景背景（真图） -- */
@@ -997,8 +1052,10 @@ html, body { overflow: hidden; height: 100%; }
 }
 
 /* -- 右下角时间 -- */
+/* 相对 .cafe-scene 定位（它就在场景内），不用 position:fixed，
+   否则桌面端场景居中后会飘离到视口角落而不是场景角落 */
 .cafe-atmosphere {
-  position: fixed;
+  position: absolute;
   bottom: 30px;
   right: 30px;
   z-index: 5;
@@ -1146,9 +1203,7 @@ html, body { overflow: hidden; height: 100%; }
   }
 
   /* 咖啡馆响应式 */
-  #bgVideoLayer {
-    object-fit: cover; /* 手机：填满屏幕可裁边 */
-  }
+  /* object-fit 保持与桌面一致的 contain，避免热区/角色坐标在手机端错位 */
   .chibi-sprite {
     width: 56px;
     height: 72px;
@@ -1187,6 +1242,23 @@ html, body { overflow: hidden; height: 100%; }
   .drop-zone .zone-label {
     font-size: 9px;
     bottom: -18px;
+  }
+}
+
+/* 手机端喵喵屋场景：cover 铺满可用视口高度，水平居中裁边 */
+@media (max-width: 600px) {
+  .cafe-body {
+    position: relative;
+  }
+  .cafe-scene {
+    position: absolute;
+    top: calc(var(--cafe-topbar-height) + var(--cafe-safe-top));
+    left: 50%;
+    transform: translateX(-50%);
+    height: calc(100dvh - var(--cafe-topbar-height) - var(--cafe-safe-top) - var(--cafe-safe-bottom));
+    width: calc((100dvh - var(--cafe-topbar-height) - var(--cafe-safe-top) - var(--cafe-safe-bottom)) * 1900 / 2550);
+    margin: 0;
+    overflow: hidden;
   }
 }
 
@@ -1236,6 +1308,7 @@ html, body { overflow: hidden; height: 100%; }
 
 @media (max-width: 600px) {
   .lobby-decoration {
-    max-width: 90%;
+    width: 90%;
+    max-width: none;
   }
 }

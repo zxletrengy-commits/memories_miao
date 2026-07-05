@@ -15,12 +15,15 @@
 <body class="cafe-body fade-in">
 
   <!-- 顶部栏 -->
-  <div class="top-bar">
+  <div class="top-bar cafe-top-bar">
     <button class="back-btn" onclick="goTo('select.html')">‹ BACK</button>
-    <button class="music-btn" id="musicBtn" onclick="toggleMusic()">
-      <span class="icon">♪</span>
-      <span class="label">ON</span>
-    </button>
+    <div class="top-bar-meta">
+      <span class="cafe-time top-bar-time" id="cafeTime">--:--</span>
+      <button class="music-btn" id="musicBtn" onclick="toggleMusic()">
+        <span class="icon">♪</span>
+        <span class="label">ON</span>
+      </button>
+    </div>
   </div>
 
   <audio id="bgm" src="assets/bgm.mp3" loop></audio>
@@ -46,29 +49,29 @@
       <video class="bg-video-layer" id="bgVideoLayer" src="assets/cafe_alot/background/day.mp4" autoplay loop muted playsinline style="display:none;"></video>
       
       <!-- 接待区装饰层（透明底PNG） -->
-      <img class="lobby-decoration" src="assets/cafe_alot/background/接待区.png" alt="接待区" style="left:40%; top:59%; width:250px; height:230px; transform:none; bottom:auto; max-width:none;">
+      <img class="lobby-decoration" src="assets/cafe_alot/background/接待区.png" alt="接待区" style="left:50%; bottom:0; width:250px; height:auto; transform:translateX(-50%); top:auto; max-width:none;">
     </div>
 
     <!-- 拖拽热区（四个功能区） -->
     <div class="drop-zones" id="dropZones">
       <!-- 休息区 -->
-      <div class="drop-zone" data-zone="sleep" style="left:35.8%; top:16.6%; width:25.8%; height:20.2%;">
+      <div class="drop-zone" data-zone="sleep" style="left:22%; top:16%; width:36%; height:22%;">
         <span class="zone-label">休息区</span>
       </div>
       <!-- 娱乐区 -->
-      <div class="drop-zone" data-zone="plant" style="left:51.2%; top:47.3%; width:9.6%; height:22.6%;">
+      <div class="drop-zone" data-zone="plant" style="left:50%; top:42%; width:32%; height:28%;">
         <span class="zone-label">娱乐区</span>
       </div>
       <!-- 清洁区 -->
-      <div class="drop-zone" data-zone="clean" style="left:41.1%; top:47.0%; width:8.5%; height:17.0%;">
+      <div class="drop-zone" data-zone="clean" style="left:18%; top:48%; width:30%; height:17%;">
         <span class="zone-label">清洁区</span>
       </div>
       <!-- 放松区 -->
-      <div class="drop-zone" data-zone="relax" style="left:42.6%; top:64.5%; width:113px; height:100px;">
+      <div class="drop-zone" data-zone="relax" style="left:10%; top:66%; width:40%; height:19%;">
         <span class="zone-label">放松区</span>
       </div>
       <!-- 接待区 -->
-      <div class="drop-zone" data-zone="lobby" style="left:34.1%; top:80.7%; width:31.3%; height:17.9%;">
+      <div class="drop-zone" data-zone="lobby" style="left:8%; top:85%; width:84%; height:15%;">
         <span class="zone-label">接待区</span>
       </div>
     </div>
@@ -78,11 +81,6 @@
 
     <!-- 对话气泡层 -->
     <div class="bubble-layer" id="bubbleLayer"></div>
-
-    <!-- 场景右下角氛围 -->
-    <div class="cafe-atmosphere">
-      <span class="cafe-time" id="cafeTime">--:--</span>
-    </div>
   </div>
 
   <script src="script.js"></script>
