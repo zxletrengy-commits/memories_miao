@@ -1300,7 +1300,7 @@ html, body { overflow: hidden; height: 100%; }
   bottom: 0;
   left: 50%;
   transform: translateX(-50%);
-  max-width: 70%;
+  max-width: 55%;
   height: auto;
   z-index: 2;
   pointer-events: none;
@@ -1308,7 +1308,7 @@ html, body { overflow: hidden; height: 100%; }
 
 @media (max-width: 600px) {
   .lobby-decoration {
-    width: 90%;
+    width: 60%;
     max-width: none;
   }
 }
