@@ -12,14 +12,14 @@ const CHARACTER_DATA = {
     "assetPath": "assets/cafe_alot/qiyu/",
     "spriteType": "gif",
     "availableStates": {
-      "sleep": { "img": "打盹.gif", "pos": { "x": 22, "y": 29 }, "label": "休息中" },
-      "plant": { "img": "呜呜呜.gif", "pos": { "x": 78, "y": 35 }, "label": "玩耍中" },
-      "clean": { "img": "来咯.gif", "pos": { "x": 28, "y": 60 }, "label": "清洁中" },
-      "relax": { "img": "有了.gif", "pos": { "x": 18, "y": 52 }, "label": "放松中" },
-      "lobby": { "img": "打盹.gif", "pos": { "x": 50, "y": 86 }, "label": "接待中" }
+      "sleep": { "img": ["Startled awake.gif", "Eat.gif"],   "widthPct": 15, "pos": { "x": 22, "y": 29 }, "label": "休息中" },
+      "plant": { "img": "Wuwuu.gif", "widthPct": 15, "pos": { "x": 78, "y": 35 }, "label": "玩耍中" },
+      "clean": { "img": ["Sway.gif", "Walk.gif"],   "widthPct": 15, "pos": { "x": 28, "y": 60 }, "label": "清洁中" },
+      "relax": { "img": ["Drawing.gif", "angry.gif"],   "widthPct": 15, "pos": { "x": 18, "y": 52 }, "label": "放松中" },
+      "lobby": { "img": "Standby.gif",   "widthPct": 15, "pos": { "x": 50, "y": 86 }, "label": "接待中" }
     },
     "preferredZones": ["sleep", "plant", "clean", "relax", "lobby"],
-    "dragGifs": { "left": "左拎猫猫.gif", "center": "求关注.gif", "right": "右拎猫猫.gif" },
+    "dragGifs": { "left": "left.gif", "center": "Follow me.gif", "right": "right.gif", "widthPct": 15 },
     "dialoguePool": [
       "你终于来了…我等了好久。",
       "今天海风很舒服，你感觉到了吗？",

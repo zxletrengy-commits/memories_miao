@@ -52,15 +52,19 @@ const CharacterManager = {
     wrapper.className = 'chibi-sprite';
     wrapper.dataset.charId = charKey;
     wrapper.dataset.state = defaultState;
-    wrapper.style.cssText = 'position:absolute;z-index:10;cursor:grab;touch-action:none;user-select:none;transform:translate(-50%,-50%)';
+    const widthPct = stateData.widthPct || 15;
+    wrapper.style.cssText = `position:absolute;z-index:10;cursor:grab;touch-action:none;user-select:none;transform:translate(-50%,-50%);width:${widthPct}%`;
     wrapper.style.left = stateData.pos.x + '%';
     wrapper.style.top = stateData.pos.y + '%';
 
     if (charData.spriteType === 'gif') {
       const img = document.createElement('img');
       img.className = 'chibi-img';
-      img.src = charData.assetPath + stateData.img;
-      img.style.cssText = 'width:120px;height:auto;pointer-events:none';
+      const imgName = Array.isArray(stateData.img) 
+        ? stateData.img[Math.floor(Math.random() * stateData.img.length)] 
+        : stateData.img;
+      img.src = charData.assetPath + imgName;
+      img.style.cssText = 'width:100%;height:auto;pointer-events:none';
       img.draggable = false;
       wrapper.appendChild(img);
     } else {
@@ -102,6 +106,8 @@ const CharacterManager = {
     const stateData = charData.availableStates[newState];
     if (!stateData) return;
     wrapper.dataset.state = newState;
+    const widthPct = stateData.widthPct || 15;
+    wrapper.style.width = widthPct + '%';
     wrapper.style.left = stateData.pos.x + '%';
     wrapper.style.top = stateData.pos.y + '%';
     const label = wrapper.querySelector('.char-state-label');
@@ -109,7 +115,12 @@ const CharacterManager = {
 
     if (charData.spriteType === 'gif') {
       const img = wrapper.querySelector('.chibi-img');
-      if (img && stateData.img) img.src = charData.assetPath + stateData.img;
+      if (img && stateData.img) {
+        const imgName = Array.isArray(stateData.img) 
+          ? stateData.img[Math.floor(Math.random() * stateData.img.length)] 
+          : stateData.img;
+        img.src = charData.assetPath + imgName;
+      }
     } else {
       const oldCvs = wrapper.querySelector('.chibi-canvas');
       if (oldCvs) oldCvs.remove();
@@ -191,7 +202,12 @@ const CharacterManager = {
       else if (xPct > 66) gif = data.dragGifs.right;
       else gif = data.dragGifs.center;
       const img = wrapper.querySelector('.chibi-img');
-      if (img && !img.src.endsWith(gif)) img.src = data.assetPath + gif;
+      if (img && !img.src.endsWith(gif)) {
+        img.src = data.assetPath + gif;
+      }
+      // 拖拽时应用 dragGifs 的百分比宽度
+      const dragWidthPct = data.dragGifs.widthPct || 15;
+      wrapper.style.width = dragWidthPct + '%';
     }
 
     // 高亮热区
