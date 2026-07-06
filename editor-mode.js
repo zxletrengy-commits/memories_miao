@@ -23,9 +23,9 @@
   function hasCssTransform(el) {
     const tf = getComputedStyle(el).transform;
     if (!tf || tf === 'none') return false;
-    // 只处理 char-instance 的 translate(-50%, -50%)，它影响 left/top 定位
+    // 只处理 chibi-sprite 的 translate(-50%, -50%)，它影响 left/top 定位
     // drop-zone 的 scale(0.92) 和 lobby-decoration 的 translateX(-50%) 跳过
-    return el.classList.contains('char-instance') && tf.includes('translate');
+    return el.classList.contains('chibi-sprite') && tf.includes('translate');
   }
 
   /** 获取元素在参照容器中的百分比位置
@@ -85,10 +85,10 @@
   function getResizeTarget(el) {
     const type = el.dataset.editable;
     if (type === 'character') {
-      // 角色：调整chibi-sprite的大小
-      const sprite = el.querySelector('.chibi-sprite');
+      // el 本身就是 .chibi-sprite，调整内部 img 尺寸
       const img = el.querySelector('.chibi-img');
-      return { element: sprite || img || el, isCharacter: true, img: img };
+      const canvas = el.querySelector('.chibi-canvas');
+      return { element: img || canvas || el, isCharacter: true, img: img };
     }
     return { element: el, isCharacter: false, img: null };
   }
@@ -116,25 +116,7 @@
   // ========== UI 创建 ==========
 
   function createToggleButton() {
-    toggleBtn = document.createElement('button');
-    toggleBtn.style.cssText = `
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      padding: 10px 20px;
-      background: #38bdf8;
-      color: #0f172a;
-      border: none;
-      border-radius: 8px;
-      font-weight: 600;
-      cursor: pointer;
-      z-index: 10000;
-      font-size: 14px;
-      box-shadow: 0 4px 12px rgba(56, 189, 248, 0.3);
-    `;
-    toggleBtn.textContent = '✏️ 编辑';
-    toggleBtn.onclick = toggleEditor;
-    document.body.appendChild(toggleBtn);
+    // 按钮已隐藏，使用 E 键触发编辑模式
   }
 
   function createEditorPanel() {
@@ -193,13 +175,9 @@
     
     if (editorActive) {
       editorPanel.style.display = 'block';
-      toggleBtn.textContent = '❌ 关闭';
-      toggleBtn.style.background = '#f97316';
       enableEditMode();
     } else {
       editorPanel.style.display = 'none';
-      toggleBtn.textContent = '✏️ 编辑';
-      toggleBtn.style.background = '#38bdf8';
       disableEditMode();
     }
   }
@@ -210,20 +188,23 @@
     const elements = collectElements();
     renderElementList(elements);
     
-    // 【修复】阻止游戏的拖拽系统干扰：让.chibi-sprite不接收鼠标事件
+    // 禁用游戏的拖拽系统：移除所有 mousedown/touchstart 监听器
     document.querySelectorAll('.chibi-sprite').forEach(sprite => {
-      sprite.style.pointerEvents = 'none';
-    });
-    // 也让action-icons不干扰（它们有独立点击）
-    document.querySelectorAll('.action-icons').forEach(icons => {
-      icons.style.pointerEvents = 'none';
+      // 克隆节点并替换，清除所有事件监听器
+      const clone = sprite.cloneNode(true);
+      sprite.parentNode.replaceChild(clone, sprite);
     });
     
-    elements.forEach(el => makeEditable(el.element, el.type));
+    // 重新收集元素（因为刚才克隆过了）
+    const newElements = collectElements();
+    newElements.forEach(el => makeEditable(el.element, el.type));
     
-    // 【关键修复】drop-zone 和 lobby-decoration 在CSS中有 pointer-events: none，
-    // 编辑器需要覆盖它才能接收到鼠标事件
-    document.querySelectorAll('.drop-zone, .lobby-decoration').forEach(el => {
+    // action-icons 和内部子元素不干扰编辑器拖拽
+    document.querySelectorAll('.action-icons, .char-state-label, .debug-badge').forEach(el => {
+      el.style.pointerEvents = 'none';
+    });
+    // drop-zone 和 lobby-decoration 在CSS中有 pointer-events: none，编辑器需要覆盖
+    document.querySelectorAll('.drop-zone, .lobby-decoration, .chibi-sprite').forEach(el => {
       el.style.pointerEvents = 'auto';
     });
   }
@@ -234,29 +215,32 @@
       el.style.cursor = 'default';
       el.style.transition = '';
       el.style.opacity = '';
-      el.style.pointerEvents = ''; // 恢复CSS默认值
+      el.style.pointerEvents = '';
       el.querySelectorAll('.resize-handle').forEach(h => h.remove());
-      // 移除编辑器添加的事件监听器
       el.removeEventListener('click', onClick);
       el.removeEventListener('mousedown', onMouseDown);
-      // 清除行内样式残留
-      el.style.transform = '';
+      // 【修复】不清除 transform，chibi-sprite 依赖 translate(-50%,-50%) 定位
       if (el.dataset.originalTransform) {
-        // 如果浏览器有计算出的transform，保留它；否则留空
         delete el.dataset.originalTransform;
       }
       delete el.dataset.editable;
     });
     
-    // 【修复】恢复游戏的拖拽系统
-    document.querySelectorAll('.chibi-sprite').forEach(sprite => {
-      sprite.style.pointerEvents = '';
-    });
-    document.querySelectorAll('.action-icons').forEach(icons => {
-      icons.style.pointerEvents = '';
+    // 恢复所有元素的 pointer-events
+    document.querySelectorAll('.action-icons, .char-state-label, .debug-badge, .drop-zone, .lobby-decoration').forEach(el => {
+      el.style.pointerEvents = '';
     });
     
     selectedElement = null;
+
+    // 【修复】重新初始化 CharacterManager 的拖拽监听器
+    // cloneNode 替换了节点，需要重新绑定
+    if (window.characterManager && typeof window.characterManager._bindDragEvents === 'function') {
+      document.querySelectorAll('.chibi-sprite').forEach(sprite => {
+        const charKey = sprite.dataset.charId;
+        if (charKey) window.characterManager._bindDragEvents(charKey, sprite);
+      });
+    }
   }
 
   // ========== 收集元素 ==========
@@ -266,10 +250,10 @@
     let charIndex = 0;
     let zoneIndex = 0;
     
-    // 【修复】角色选择器 .char → .char-instance
-    document.querySelectorAll('.char-instance').forEach(el => {
+    // 角色：.chibi-sprite，data-charId
+    document.querySelectorAll('.chibi-sprite').forEach(el => {
       charIndex++;
-      const charKey = el.dataset.char || 'unknown';
+      const charKey = el.dataset.charId || 'unknown';
       elements.push({
         element: el,
         type: 'character',
@@ -277,6 +261,9 @@
       });
     });
     
+    // 热区和装饰png在编辑模式下不显示（只编辑角色）
+    // 如果以后需要编辑热区/装饰，取消下面的注释
+    /*
     // 接待区PNG
     document.querySelectorAll('.lobby-decoration').forEach(el => {
       elements.push({
@@ -297,6 +284,7 @@
         name: `热区 ${zoneIndex}: ${label}`
       });
     });
+    */
     
     return elements;
   }
@@ -417,17 +405,27 @@
     const inputs = document.getElementById('propertyInputs');
     panel.style.display = 'block';
     
-    // 【修复】使用消除transform的位置
-    const pos = getPositionPct(el);
-    const size = getVisualSize(el);
-    
-    const x = pos.x.toFixed(1);
-    const y = pos.y.toFixed(1);
-    const width = size.width.toFixed(0);
-    const height = size.height.toFixed(0);
-    
     const type = el.dataset.editable;
     const isCharacter = type === 'character';
+    
+    let x, y, width, height;
+    
+    if (isCharacter) {
+      // 角色直接读 style.left/top（已经是中心锚点百分比，不能用 getBoundingClientRect 算）
+      x = (parseFloat(el.style.left) || 0).toFixed(1);
+      y = (parseFloat(el.style.top) || 0).toFixed(1);
+      // 宽高读实际渲染尺寸
+      const rect = el.getBoundingClientRect();
+      width = rect.width.toFixed(0);
+      height = rect.height.toFixed(0);
+    } else {
+      const pos = getPositionPct(el);
+      const size = getVisualSize(el);
+      x = pos.x.toFixed(1);
+      y = pos.y.toFixed(1);
+      width = size.width.toFixed(0);
+      height = size.height.toFixed(0);
+    }
     
     inputs.innerHTML = `
       <div style="margin-bottom: 12px;">
@@ -479,21 +477,15 @@
     const type = el.dataset.editable;
     
     if (type === 'character') {
-      // 【修复】角色：位置设在wrapper上，大小设在sprite/img上
+      // 设位置
       el.style.left = x + '%';
       el.style.top = y + '%';
-      
-      const sprite = el.querySelector('.chibi-sprite');
+      // 设宽度，并清除 CSS 固定高度（让 wrapper 高度随 gif 自然比例撑开）
+      el.style.width = width + 'px';
+      el.style.height = 'auto';
+      // 确保 img 是 width:100% height:auto，不受 CSS height:100% 影响
       const img = el.querySelector('.chibi-img');
-      
-      if (sprite) {
-        sprite.style.width = width + 'px';
-        sprite.style.height = height + 'px';
-      }
-      if (img) {
-        img.style.width = width + 'px';
-        img.style.height = height + 'px';
-      }
+      if (img) img.style.cssText = 'width:100%;height:auto;pointer-events:none';
     } else {
       el.style.left = x + '%';
       el.style.top = y + '%';
@@ -515,43 +507,33 @@
     isDragging = true;
     selectedElement = el;
     
-    const type = el.dataset.editable;
+    // 直接用 left/top 百分比做偏移，不碰 transform，不用 getBoundingClientRect
+    const scene = document.getElementById('cafeScene');
+    const sceneRect = scene.getBoundingClientRect();
     
-    // 【修复】对带transform的元素，临时去掉transform
-    const hasTransform = hasCssTransform(el);
-    if (hasTransform) {
-      removeTransformKeepPosition(el);
-    }
+    // 鼠标在场景内的百分比
+    const mousePctX = (e.clientX - sceneRect.left) / sceneRect.width * 100;
+    const mousePctY = (e.clientY - sceneRect.top) / sceneRect.height * 100;
     
-    const rect = el.getBoundingClientRect();
-    const offsetParent = el.offsetParent;
-    if (!offsetParent) return;
-    const parentRect = offsetParent.getBoundingClientRect();
+    // 元素当前 left/top 百分比（中心锚点）
+    const curLeft = parseFloat(el.style.left) || 0;
+    const curTop = parseFloat(el.style.top) || 0;
     
-    startX = e.clientX;
-    startY = e.clientY;
-    startLeft = rect.left - parentRect.left;
-    startTop = rect.top - parentRect.top;
+    // 偏移 = 鼠标百分比 - 元素中心百分比，拖动时保持不变
+    const offsetPctX = mousePctX - curLeft;
+    const offsetPctY = mousePctY - curTop;
     
     // 视觉反馈
     el.style.cursor = 'grabbing';
     el.style.transition = 'none';
     el.style.opacity = '0.85';
     
-    const dragParent = el.offsetParent; // 在闭包中缓存，保证mousemove时一致
-    const dragParentRect = dragParent.getBoundingClientRect();
-    
     document.onmousemove = (moveEvent) => {
       if (!isDragging) return;
-      
-      const dx = moveEvent.clientX - startX;
-      const dy = moveEvent.clientY - startY;
-      
-      const newLeft = ((startLeft + dx) / dragParentRect.width) * 100;
-      const newTop = ((startTop + dy) / dragParentRect.height) * 100;
-      
-      el.style.left = Math.max(0, Math.min(100, newLeft)) + '%';
-      el.style.top = Math.max(0, Math.min(100, newTop)) + '%';
+      const mX = (moveEvent.clientX - sceneRect.left) / sceneRect.width * 100;
+      const mY = (moveEvent.clientY - sceneRect.top) / sceneRect.height * 100;
+      el.style.left = (mX - offsetPctX) + '%';
+      el.style.top = (mY - offsetPctY) + '%';
     };
     
     document.onmouseup = () => {
@@ -559,12 +541,6 @@
       el.style.cursor = 'move';
       el.style.transition = '';
       el.style.opacity = '1';
-      
-      // 【修复】恢复transform（所有类型，只要有原始transform）
-      if (el.dataset.originalTransform) {
-        restoreTransformKeepPosition(el, el.dataset.originalTransform);
-      }
-      
       document.onmousemove = null;
       document.onmouseup = null;
       if (selectedElement) showProperties(selectedElement);
@@ -733,23 +709,25 @@
       });
     });
     
-    // 收集角色
+    // 收集角色 - 输出 characters-inline.js 兼容格式
     document.querySelectorAll('[data-editable="character"]').forEach(el => {
-      const pos = getPositionPct(el);
-      const sprite = el.querySelector('.chibi-sprite');
+      const scene = document.getElementById('cafeScene');
+      const sceneRect = scene.getBoundingClientRect();
+      // 直接用 left/top 百分比（已经是相对 cafe-scene 的）
+      const x = parseFloat(el.style.left);
+      const y = parseFloat(el.style.top);
       const img = el.querySelector('.chibi-img');
-      let w = 72;
-      if (img && img.style.width) {
-        w = parseInt(img.style.width);
-      } else if (sprite) {
-        w = sprite.getBoundingClientRect().width;
-      }
+      let w = 120;
+      if (img && img.style.width) w = parseInt(img.style.width);
+      const charKey = el.dataset.charId || 'unknown';
+      const state = el.dataset.state || 'lobby';
       config.characters.push({
-        id: el.dataset.char || 'unknown',
-        x: pos.x.toFixed(1),
-        y: pos.y.toFixed(1),
-        width: w.toFixed(0),
-        state: el.dataset.state || 'idle'
+        charKey,
+        state,
+        pos: { x: parseFloat(x.toFixed(1)), y: parseFloat(y.toFixed(1)) },
+        imgWidth: w,
+        // 直接可复制回 characters-inline.js 的格式
+        jsonSnippet: `"${state}": { ..., "pos": { "x": ${x.toFixed(1)}, "y": ${y.toFixed(1)} } }`
       });
     });
     

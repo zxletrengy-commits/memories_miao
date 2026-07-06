@@ -14,15 +14,15 @@ const CharacterManager = {
   _ZONE_STATE_MAP: {
     sleep: { qiyu: 'sleep', lishen: 'sleep' },
     plant: { qiyu: 'plant', lishen: 'plant' },
-    clean: { qiyu: 'clean', lishen: 'idle' },
-    relax: { qiyu: 'relax', lishen: 'idle' },
-    lobby: { qiyu: 'lobby', lishen: 'coffee' }
+    clean: { qiyu: 'clean', lishen: 'clean' },
+    relax: { qiyu: 'relax', lishen: 'relax' },
+    lobby: { qiyu: 'lobby', lishen: 'lobby' }
   },
 
   async init(selectedKeys) {
     if (!this._data) {
       try {
-        const res = await fetch('data/characters.json');
+        const res = await fetch('data/characters.json?v=' + Date.now());
         this._data = await res.json();
       } catch (e) {
         // Fallback for file:// protocol where fetch fails
@@ -44,7 +44,7 @@ const CharacterManager = {
     if (!charLayer) return;
     const charData = this._data[charKey];
     if (!charData) return;
-    const defaultState = charKey === 'qiyu' ? 'lobby' : 'coffee';
+    const defaultState = charKey === 'qiyu' ? 'lobby' : 'lobby';
     const stateData = charData.availableStates[defaultState];
     if (!stateData) return;
 
@@ -52,18 +52,16 @@ const CharacterManager = {
     wrapper.className = 'chibi-sprite';
     wrapper.dataset.charId = charKey;
     wrapper.dataset.state = defaultState;
-    const widthPct = stateData.widthPct || 15;
-    wrapper.style.cssText = `position:absolute;z-index:10;cursor:grab;touch-action:none;user-select:none;transform:translate(-50%,-50%);width:${widthPct}%`;
-    wrapper.style.left = stateData.pos.x + '%';
-    wrapper.style.top = stateData.pos.y + '%';
+    const picked = this._pickStateOption(stateData);
+    const zIndex = (charKey === 'lishen' && (defaultState === 'sleep' || defaultState === 'relax')) ? 8 : 10;
+    wrapper.style.cssText = `position:absolute;z-index:${zIndex};cursor:grab;touch-action:none;user-select:none;transform:translate(-50%,-50%);width:${picked.widthPct}%;height:auto`;
+    wrapper.style.left = picked.pos.x + '%';
+    wrapper.style.top = picked.pos.y + '%';
 
     if (charData.spriteType === 'gif') {
       const img = document.createElement('img');
       img.className = 'chibi-img';
-      const imgName = Array.isArray(stateData.img) 
-        ? stateData.img[Math.floor(Math.random() * stateData.img.length)] 
-        : stateData.img;
-      img.src = charData.assetPath + imgName;
+      img.src = charData.assetPath + encodeURIComponent(picked.img);
       img.style.cssText = 'width:100%;height:auto;pointer-events:none';
       img.draggable = false;
       wrapper.appendChild(img);
@@ -76,7 +74,6 @@ const CharacterManager = {
 
     const label = document.createElement('div');
     label.className = 'char-state-label';
-    label.textContent = stateData.label || '';
     wrapper.appendChild(label);
 
     const icons = UIManager.createActionIcons(charKey);
@@ -89,9 +86,7 @@ const CharacterManager = {
       UIManager.showBubble(charKey, wrapper, charData.dialoguePool);
     });
 
-    const startDrag = (e) => { e.preventDefault(); this._startDrag(e, charKey, wrapper); };
-    wrapper.addEventListener('mousedown', startDrag);
-    wrapper.addEventListener('touchstart', startDrag, { passive: false });
+    this._bindDragEvents(charKey, wrapper);
 
     charLayer.appendChild(wrapper);
     this._activeChars.push({ key: charKey, wrapper: wrapper });
@@ -106,20 +101,22 @@ const CharacterManager = {
     const stateData = charData.availableStates[newState];
     if (!stateData) return;
     wrapper.dataset.state = newState;
-    const widthPct = stateData.widthPct || 15;
-    wrapper.style.width = widthPct + '%';
-    wrapper.style.left = stateData.pos.x + '%';
-    wrapper.style.top = stateData.pos.y + '%';
+    const picked = this._pickStateOption(stateData);
+    wrapper.style.width = picked.widthPct + '%';
+    wrapper.style.height = 'auto';
+    wrapper.style.left = picked.pos.x + '%';
+    wrapper.style.top = picked.pos.y + '%';
+    // 黎深在 sleep/relax 热区时层级低于祁煜
+    if (charKey === 'lishen') {
+      wrapper.style.zIndex = (newState === 'sleep' || newState === 'relax') ? '8' : '10';
+    }
     const label = wrapper.querySelector('.char-state-label');
-    if (label) label.textContent = stateData.label || '';
+    if (label) label.textContent = '';
 
     if (charData.spriteType === 'gif') {
       const img = wrapper.querySelector('.chibi-img');
-      if (img && stateData.img) {
-        const imgName = Array.isArray(stateData.img) 
-          ? stateData.img[Math.floor(Math.random() * stateData.img.length)] 
-          : stateData.img;
-        img.src = charData.assetPath + imgName;
+      if (img && picked.img) {
+        img.src = charData.assetPath + encodeURIComponent(picked.img);
       }
     } else {
       const oldCvs = wrapper.querySelector('.chibi-canvas');
@@ -139,7 +136,14 @@ const CharacterManager = {
     const delay = 30000 + Math.random() * 60000;
     this._autoSwitchTimers[charKey] = setTimeout(() => {
       const current = wrapper.dataset.state;
-      const others = states.filter(s => s !== current);
+      let others = states.filter(s => s !== current);
+      // 双人模式下，clean 热区同一时间只允许一个角色（手动拖拽不受限）
+      if (this._activeChars.length > 1) {
+        const otherChar = this._activeChars.find(c => c.key !== charKey);
+        if (otherChar && otherChar.wrapper.dataset.state === 'clean') {
+          others = others.filter(s => s !== 'clean');
+        }
+      }
       if (others.length === 0) return;
       const next = others[Math.floor(Math.random() * others.length)];
       this.changeCharacterState(charKey, wrapper, next);
@@ -150,12 +154,23 @@ const CharacterManager = {
   // --- DRAG START ---
   _startDrag(e, charKey, wrapper) {
     const touch = e.touches ? e.touches[0] : e;
-    const rect = wrapper.getBoundingClientRect();
+    const scene = document.getElementById('cafeScene');
+    const sceneRect = scene.getBoundingClientRect();
+
+    // 记录鼠标在场景内的百分比坐标
+    const mousePctX = (touch.clientX - sceneRect.left) / sceneRect.width * 100;
+    const mousePctY = (touch.clientY - sceneRect.top) / sceneRect.height * 100;
+
+    // 元素当前的 left/top 百分比（就是中心点坐标）
+    const curLeft = parseFloat(wrapper.style.left) || 0;
+    const curTop = parseFloat(wrapper.style.top) || 0;
+
+    // 偏移 = 鼠标百分比 - 元素中心百分比
     this._dragState = {
-      charKey: charKey,
-      wrapper: wrapper,
-      offsetX: touch.clientX - rect.left,
-      offsetY: touch.clientY - rect.top,
+      charKey,
+      wrapper,
+      offsetX: mousePctX - curLeft,
+      offsetY: mousePctY - curTop,
       startX: touch.clientX,
       startY: touch.clientY,
       didMove: false,
@@ -186,11 +201,11 @@ const CharacterManager = {
     const wrapper = this._dragState.wrapper;
     const scene = document.getElementById('cafeScene');
     const sceneRect = scene.getBoundingClientRect();
-    let x = touch.clientX - sceneRect.left - this._dragState.offsetX;
-    let y = touch.clientY - sceneRect.top - this._dragState.offsetY;
-    wrapper.style.transform = 'none';
-    wrapper.style.left = Math.max(0, x) + 'px';
-    wrapper.style.top = Math.max(0, y) + 'px';
+    // 鼠标百分比 - 初始偏移 = 元素中心点应在的百分比坐标
+    const centerX = (touch.clientX - sceneRect.left) / sceneRect.width * 100 - this._dragState.offsetX;
+    const centerY = (touch.clientY - sceneRect.top) / sceneRect.height * 100 - this._dragState.offsetY;
+    wrapper.style.left = centerX + '%';
+    wrapper.style.top = centerY + '%';
 
     // GIF拖拽动画（祁煜专用）
     const charKey = this._dragState.charKey;
@@ -202,11 +217,13 @@ const CharacterManager = {
       else if (xPct > 66) gif = data.dragGifs.right;
       else gif = data.dragGifs.center;
       const img = wrapper.querySelector('.chibi-img');
-      if (img && !img.src.endsWith(gif)) {
-        img.src = data.assetPath + gif;
+      if (img && !img.src.endsWith(encodeURIComponent(gif))) {
+        img.src = data.assetPath + encodeURIComponent(gif);
       }
-      // 拖拽时应用 dragGifs 的百分比宽度
-      const dragWidthPct = data.dragGifs.widthPct || 15;
+      // 拖拽时应用 dragGifs 的百分比宽度（左右用 sideWidthPct，中间用 widthPct）
+      const dragWidthPct = (gif === data.dragGifs.center)
+        ? (data.dragGifs.widthPct || 23)
+        : (data.dragGifs.sideWidthPct || 18);
       wrapper.style.width = dragWidthPct + '%';
     }
 
@@ -246,31 +263,39 @@ const CharacterManager = {
 
     if (!wasDrag) {
       this._cleanup();
+      // touchend 时没有移动，手动触发点击逻辑（因为 preventDefault 阻止了 click 事件）
+      if (e.changedTouches) {
+        const charData = this._data[charKey];
+        UIManager.toggleIcons(charKey, wrapper);
+        UIManager.showBubble(charKey, wrapper, charData.dialoguePool);
+      }
       return;
     }
 
-    const wrapperRect = wrapper.getBoundingClientRect();
-    const centerX = wrapperRect.left + wrapperRect.width / 2 - sceneRect.left;
-    const centerY = wrapperRect.top + wrapperRect.height / 2 - sceneRect.top;
-    const xPct = (centerX / sceneRect.width) * 100;
-    const yPct = (centerY / sceneRect.height) * 100;
-
-    requestAnimationFrame(() => {
-      wrapper.style.transform = 'translate(-50%,-50%)';
-      wrapper.style.left = xPct + '%';
-      wrapper.style.top = yPct + '%';
-
-      if (droppedZone && this._ZONE_STATE_MAP[droppedZone]) {
-        const targetState = this._ZONE_STATE_MAP[droppedZone][charKey];
-        if (targetState && this._data[charKey].availableStates[targetState]) {
-          this.changeCharacterState(charKey, wrapper, targetState);
-        }
-      } else {
-        const cur = wrapper.dataset.state;
-        const sd = this._data[charKey].availableStates[cur];
-        if (sd) { wrapper.style.left = sd.pos.x + '%'; wrapper.style.top = sd.pos.y + '%'; }
+    // 落到热区 → 切换状态；没落到 → 回到当前状态的原始坐标
+    if (droppedZone && this._ZONE_STATE_MAP[droppedZone]) {
+      const targetState = this._ZONE_STATE_MAP[droppedZone][charKey];
+      if (targetState && this._data[charKey].availableStates[targetState]) {
+        this.changeCharacterState(charKey, wrapper, targetState);
       }
-    });
+    } else {
+      // 没落到热区，恢复原始位置、尺寸和 gif
+      const cur = wrapper.dataset.state;
+      const sd = this._data[charKey].availableStates[cur];
+      if (sd) {
+        const restored = this._pickStateOption(sd);
+        wrapper.style.left = restored.pos.x + '%';
+        wrapper.style.top = restored.pos.y + '%';
+        wrapper.style.width = restored.widthPct + '%';
+        const charData = this._data[charKey];
+        if (charData.spriteType === 'gif') {
+          const img = wrapper.querySelector('.chibi-img');
+          if (img && restored.img) {
+            img.src = charData.assetPath + encodeURIComponent(restored.img);
+          }
+        }
+      }
+    }
 
     this._cleanup();
   },
@@ -283,5 +308,36 @@ const CharacterManager = {
     document.removeEventListener('touchmove', this._boundOnDrag);
     document.removeEventListener('touchend', this._boundEndDrag);
     document.removeEventListener('touchcancel', this._boundEndDrag);
+  },
+
+  // 从 stateData 中随机选一个 gif + 坐标 + 宽度
+  _pickStateOption(stateData) {
+    if (stateData.options && stateData.options.length > 0) {
+      const opt = stateData.options[Math.floor(Math.random() * stateData.options.length)];
+      return { img: opt.img, widthPct: opt.widthPct || 15, pos: opt.pos };
+    }
+    return {
+      img: Array.isArray(stateData.img)
+        ? stateData.img[Math.floor(Math.random() * stateData.img.length)]
+        : stateData.img,
+      widthPct: stateData.widthPct || 15,
+      pos: stateData.pos
+    };
+  },
+
+  // 独立的拖拽绑定方法，供编辑器关闭后重新绑定
+  _bindDragEvents(charKey, wrapper) {
+    // 移除旧的监听器（如果有），避免重复绑定
+    if (wrapper._startDragHandler) {
+      wrapper.removeEventListener('mousedown', wrapper._startDragHandler);
+      wrapper.removeEventListener('touchstart', wrapper._startDragHandler);
+    }
+    const startDrag = (e) => { e.preventDefault(); this._startDrag(e, charKey, wrapper); };
+    wrapper._startDragHandler = startDrag;
+    wrapper.addEventListener('mousedown', startDrag);
+    wrapper.addEventListener('touchstart', startDrag, { passive: false });
   }
 };
+
+// 挂到 window，供 editor-mode.js 关闭编辑器时重新绑定拖拽
+window.characterManager = CharacterManager;

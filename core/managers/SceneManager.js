@@ -82,31 +82,10 @@ const SceneManager = {
   },
 
   // ---------- 背景图适配 ----------
+  // 统一用 contain：无论桌面/手机，背景图完整显示不裁切，
+  // 保证热区/角色的百分比坐标在两端对应画面里同一个位置（见坑：手机端曾用cover导致热区错位）
   _fitBgImage(bgLayer, src) {
-    const applyFit = (imgW, imgH) => {
-      const screenW = window.innerWidth;
-      const screenH = window.innerHeight;
-      const isMobile = screenW < 600;
-      if (isMobile) {
-        const imgRatio    = imgW / imgH;
-        const screenRatio = screenW / screenH;
-        bgLayer.style.backgroundSize = imgRatio > screenRatio ? 'auto 100%' : '100% auto';
-      } else {
-        bgLayer.style.backgroundSize = 'contain';
-      }
-    };
-
-    if (this._bgImageCache[src]) {
-      const c = this._bgImageCache[src];
-      applyFit(c.w, c.h);
-    } else {
-      const img   = new Image();
-      img.onload  = () => {
-        this._bgImageCache[src] = { w: img.width, h: img.height };
-        applyFit(img.width, img.height);
-      };
-      img.src = src;
-    }
+    bgLayer.style.backgroundSize = 'contain';
   },
 
   // ---------- 时间显示 ----------

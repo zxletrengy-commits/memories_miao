@@ -1,7 +1,7 @@
 # Project Map (技术现状速查)
 
-本文件跟 PROJECT_RULE / ARCHITECTURE_RULE / DEVELOPMENT_RULE 不重复。
-那三份是"规矩"，这份是"地图"——记录当前代码里实际有什么，方便快速定位，
+本文件跟 PROJECT_GUIDE 不重复。
+那份是"规矩"，这份是"地图"——记录当前代码里实际有什么，方便快速定位，
 减少每次改动都要整篇重读文件的成本。
 
 维护原则：改了代码顺手更新这里对应的条目，不需要单独起一轮任务来维护。
@@ -96,7 +96,7 @@ dialoguePool    → 点击时随机弹出的对话文本
 | `.bg-video-layer` | 白天背景视频层，`object-fit: contain`(桌面)/`cover`(手机，`@media max-width:600px`) |
 | `.bg-image-layer` | 黄昏/夜晚静态背景图层 |
 
-## 7. 已知的坑
+## 7. 已知的坑（重重重点！一定要提前避开）
 
 1. **`fetch()` 在 `file://` 协议下会因CORS失败**——本地直接双击打开html时 `fetch('data/characters.json')` 会静默失败。已加 `try/catch` 兜底读取全局变量 `CHARACTER_DATA`（来自 `data/characters-inline.js`）。**改了 `characters.json` 记得同步改 `characters-inline.js`**，否则本地打开和部署后行为不一致。
 2. **大文件用 `write_file` 整体重写容易被截断**——超过一定长度的文件（如曾经的 `CharacterManager.js`）分段写或用 `edit_file` 做局部替换，不要整篇 `write_file`。
@@ -111,3 +111,13 @@ dialoguePool    → 点击时随机弹出的对话文本
 - 改热区位置/大小 → `cafe.html` 里的 `.drop-zone` div + 用编辑模式（按`E`）可视化调
 - 改视觉样式（颜色/大小/间距） → `style.css`，先用搜索定位类名，不整篇读
 - 加新角色 → 只改 `characters.json`+素材文件夹，理论上不用改Manager代码（若需要改代码说明架构有耦合，需检查）
+
+## AI Workflow
+
+When solving a task:
+
+1. Read SESSION_STATE.md
+2. Read only relevant files.
+3. Do NOT scan the entire project.
+4. Preserve existing behaviour.
+5. Update PROJECT_MAP only if architecture changes.

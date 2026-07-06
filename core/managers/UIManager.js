@@ -75,8 +75,10 @@ const UIManager = {
 
     if (wrapper) {
       const rect = wrapper.getBoundingClientRect();
-      bubble.style.left = (rect.left + rect.width / 2) + 'px';
-      bubble.style.top  = (rect.top - 10) + 'px';
+      const scene = document.getElementById('cafeScene');
+      const sceneRect = scene ? scene.getBoundingClientRect() : { left: 0, top: 0 };
+      bubble.style.left = (rect.left + rect.width / 2 - sceneRect.left) + 'px';
+      bubble.style.top  = (rect.top - 10 - sceneRect.top) + 'px';
     } else {
       bubble.style.left = '50%';
       bubble.style.top  = '30%';
