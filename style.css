@@ -7,7 +7,11 @@
   --accent-soft: rgba(107, 127, 168, 0.2);
 }
 
-* { box-sizing: border-box; }
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+  outline: none;
+}
 
 body {
   margin: 0;
@@ -40,7 +44,7 @@ html, body { overflow: hidden; height: 100%; }
   inset: 0;
   z-index: -2;
   background-image: url('assets/milkyway.jpg');
-  background-size: contain;
+  background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
   background-color: #080b14;
@@ -77,64 +81,140 @@ html, body { overflow: hidden; height: 100%; }
 }
 
 .container {
-  position: absolute;
-  top: 50%; left: 50%;
-  transform: translate(-50%, -50%) scale(0.78);
+  position: fixed;
+  top: 35%; left: 50%;
+  transform: translate(-50%, -50%);
   text-align: center;
+  width: 90vw;
+  max-width: 760px;
+}
+
+.btn-wrapper {
+  position: fixed;
+  top: 58%; left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+
+/* 桌面端缩小字号来代替 scale */
+@media (min-width: 601px) {
+  .container .main-title {
+    font-size: 72px;
+  }
+  .container .sub-en {
+    font-size: 13px;
+  }
+  .container .sub-cn {
+    font-size: 11px;
+  }
 }
 
 .main-title {
   font-family: "Cormorant Garamond", "Times New Roman", serif;
-  font-size: 82px;
+  font-size: 92px;
   font-weight: 600;
-  letter-spacing: 4px;
+  letter-spacing: 7px;
   line-height: 0.95;
   color: #F8F6F2;
   margin-bottom: 16px;
 }
 
+.title-divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 20px;
+  margin-bottom: 0;
+  opacity: 0;
+  animation: fadeToLine 1.2s ease 0.6s forwards;
+}
+
+.divider-bracket {
+  font-family: "Cormorant Garamond", serif;
+  font-size: 22px;
+  font-weight: 300;
+  line-height: 1;
+  color: #F8F6F2;
+  position: relative;
+  top: -1px;
+}
+
+.divider-line {
+  display: inline-block;
+  width: 60px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #F8F6F2, transparent);
+}
+
+.divider-dot {
+  font-size: 7px;
+  color: #F8F6F2;
+  line-height: 1;
+}
+
+@keyframes fadeToLine {
+  from { opacity: 0; }
+  to   { opacity: 0.5; }
+}
+
+@keyframes fadeToSub {
+  from { opacity: 0; }
+  to   { opacity: 0.5; }
+}
+
 .sub {
-  margin-bottom: 36px;
-  line-height: 1.4;
+  position: fixed;
+  bottom: 36px;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  margin: 0;
+  line-height: 1.6;
+  opacity: 0;
+  animation: fadeToSub 1.2s ease 1.2s forwards;
+  pointer-events: none;
 }
 
 .sub-en {
   display: block;
   font-family: "Inter", "Source Sans 3", sans-serif;
-  font-size: 18px;
+  font-size: 11px;
   font-weight: 300;
-  letter-spacing: 1px;
-  opacity: 0.85;
-  margin-bottom: 6px;
+  letter-spacing: 1.5px;
+  margin-bottom: 4px;
 }
 
 .sub-cn {
   display: block;
   font-family: "Noto Serif SC", "Source Han Serif", serif;
-  font-size: 16px;
+  font-size: 10px;
   font-weight: 300;
   letter-spacing: 1px;
-  opacity: 0.7;
 }
 
 .enter-btn {
-  padding: 14px 40px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 30px;
-  background: rgba(37, 42, 58, 0.8);
+  padding: 7px 36px;
+  margin-top: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: 40px;
+  background: rgba(20, 24, 40, 0.55);
   color: var(--text);
   font-size: 15px;
   cursor: pointer;
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   transition: all 0.4s ease;
-  line-height: 1.5;
+  line-height: 1.4;
+  letter-spacing: 2px;
+  -webkit-tap-highlight-color: transparent;
+  outline: none;
 }
 
 .enter-btn:hover {
-  background: rgba(50, 58, 80, 0.85);
-  border-color: rgba(107, 127, 168, 0.4);
-  box-shadow: 0 0 28px rgba(107, 127, 168, 0.15), 0 0 8px rgba(107, 127, 168, 0.08);
+  background: rgba(40, 44, 64, 0.6);
+  border-color: rgba(255, 255, 255, 0.5);
+  box-shadow: 0 0 24px rgba(255, 255, 255, 0.25), 0 0 8px rgba(255, 255, 255, 0.15);
   transform: scale(1.03);
 }
 
@@ -158,11 +238,11 @@ html, body { overflow: hidden; height: 100%; }
 .btn-cn {
   display: block;
   font-family: "Noto Serif SC", "Source Han Serif", serif;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 300;
   opacity: 0.7;
   letter-spacing: 1px;
-  margin-top: 2px;
+  margin-top: 0;
 }
 
 /* ---------- 顶部栏 ---------- */
@@ -1120,23 +1200,30 @@ html, body { overflow: hidden; height: 100%; }
 
 /* ---------- 手机自适应 ---------- */
 @media (max-width: 600px) {
+  .container {
+    transform: translate(-50%, -50%);
+    width: 90vw;
+  }
   .main-title {
-    font-size: 48px;
-    letter-spacing: 3px;
+    font-size: 38px;
+    letter-spacing: 2px;
     margin-bottom: 12px;
+    white-space: nowrap;
   }
   .sub-en {
-    font-size: 15px;
+    font-size: 11px;
+    letter-spacing: 0.5px;
     margin-bottom: 4px;
   }
   .sub-cn {
-    font-size: 14px;
+    font-size: 10px;
+    letter-spacing: 0.5px;
   }
   .sub {
     margin-bottom: 28px;
   }
   .enter-btn {
-    padding: 12px 32px;
+    padding: 5px 32px;
     font-size: 14px;
   }
 
