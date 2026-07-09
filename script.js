@@ -107,6 +107,14 @@ function initStarfield() {
 
   setInterval(() => { if (Math.random() > 0.5) spawnMeteor(); }, 1800);
 
+  // 暴露给外部（Enter 过渡用）
+  window.spawnMeteorBurst = function() {
+    const count = 5 + Math.floor(Math.random() * 4);
+    for (let i = 0; i < count; i++) {
+      setTimeout(spawnMeteor, i * (80 + Math.random() * 150));
+    }
+  };
+
   function scheduleShower() {
     const delay = 8000 + Math.random() * 12000;
     setTimeout(() => {
@@ -122,6 +130,46 @@ function initStarfield() {
 function goTo(url) {
   document.body.classList.add('fade-out');
   setTimeout(() => { window.location.href = url; }, 350);
+}
+
+// ---------- 入口页 Enter 过渡动画 ----------
+function enterTransition() {
+  const btn = document.querySelector('.enter-btn');
+  if (!btn || btn._transitioning) return;
+  btn._transitioning = true;
+
+  // 第一步：按下放大（弹簧感）
+  btn.classList.add('press');
+
+  // 第二步：300ms 后去掉放大，停顿 150ms 给"松手"感
+  setTimeout(() => {
+    btn.classList.remove('press');
+
+    setTimeout(() => {
+      // 文字缓慢淡出
+      ['.main-title', '.title-divider', '.sub'].forEach(sel => {
+        const el = document.querySelector(sel);
+        if (el) el.classList.add('exit-fade');
+      });
+
+      // 按钮缓慢缩小消失
+      btn.classList.add('exit-shrink');
+
+      // 星空放大变暗
+      const bg = document.querySelector('.cosmic-bg');
+      if (bg) bg.classList.add('zoom');
+
+      // 触发流星群
+      if (typeof spawnMeteorBurst === 'function') spawnMeteorBurst();
+
+      // 1.4s 后跳转（等变暗走完）
+      setTimeout(() => {
+        document.body.classList.add('fade-out');
+        setTimeout(() => { window.location.href = 'loading.html'; }, 400);
+      }, 1400);
+
+    }, 150);
+  }, 300);
 }
 
 // ---------- 3D 翻转卡片 ----------
@@ -140,7 +188,7 @@ function initFlipCard() {
   front.style.backgroundImage = `url('${FLIP_IMAGES[firstIndex]}')`;
   back.style.backgroundImage  = `url('${FLIP_IMAGES[1 - firstIndex]}')`;
 
-  setTimeout(() => card.classList.add('flipping'), 1500);
+  setTimeout(() => card.classList.add('flipping'), 1000);
 }
 
 // ---------- 加载条动画 ----------
@@ -149,7 +197,7 @@ function initLoadingBar() {
   const dot  = document.getElementById('loadingDot');
   if (!fill) return;
 
-  const duration = 3500;
+  const duration = 2000;
   const start    = performance.now();
   const barWidth = fill.parentElement ? fill.parentElement.offsetWidth : 260;
 
@@ -195,6 +243,20 @@ function toggleMusic() {
     btn.classList.add('off');
     btn.querySelector('.label').textContent = 'OFF';
     localStorage.setItem('bgm-on', 'off');
+  }
+}
+
+// ---------- 全屏 ----------
+function enterFullscreen() {
+  const el = document.documentElement;
+  if (el.requestFullscreen) {
+    el.requestFullscreen().catch(() => {});
+  } else if (el.webkitRequestFullscreen) {
+    el.webkitRequestFullscreen();
+  } else if (el.mozRequestFullScreen) {
+    el.mozRequestFullScreen();
+  } else if (el.msRequestFullscreen) {
+    el.msRequestFullscreen();
   }
 }
 

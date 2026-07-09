@@ -92,3 +92,19 @@ Rules:
 
 \- Do not redesign without approval.
 
+
+
+\## AI Working Style
+
+
+
+\- Read PROJECT\_GUIDE.md, PROJECT\_MAP.md, SESSION\_STATE.md before major changes.
+
+\- Explain the plan before modifying multiple files.
+
+\- Prefer small fixes over rewrites.
+
+\- Never redesign existing systems without approval.
+
+\- Keep changes compatible with current architecture.
+

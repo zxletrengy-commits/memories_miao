@@ -46,6 +46,8 @@ const SceneManager = {
     const bgVideo = document.getElementById('bgVideoLayer');
     const rain    = document.getElementById('rainOverlay');
     const sunGlow = document.getElementById('sunGlow');
+    const topBar  = document.querySelector('.cafe-top-bar');
+    const body    = document.body;
 
     if (!bgLayer || !bgVideo) return;
 
@@ -55,6 +57,14 @@ const SceneManager = {
       if (bgVideo.paused) bgVideo.play().catch(() => {});
       if (rain)    rain.style.display    = 'none';
       if (sunGlow) sunGlow.style.display = 'block';
+
+      // 顶栏：白天用暖色渐变模拟视频质感 + 浅米黄覆盖层
+      if (topBar) {
+        topBar.style.setProperty('--topbar-bg', 'radial-gradient(ellipse at 45% 30%, #f8e6c8, #e6d4ba 50%, #d4c2a8 100%)');
+        topBar.style.setProperty('--topbar-overlay', 'rgba(255, 250, 240, 0.55)');
+      }
+      if (body) body.classList.remove('topbar-night');
+
     } else {
       bgLayer.style.display = 'block';
       bgVideo.style.display = 'none';
@@ -76,6 +86,18 @@ const SceneManager = {
 
       this._fitBgImage(bgLayer, src);
 
+      // 顶栏：傍晚/夜间用实际背景图 + 对应色调覆盖层
+      if (topBar) {
+        topBar.style.setProperty('--topbar-bg', `url('${src}')`);
+        if (tod === 'dusk') {
+          topBar.style.setProperty('--topbar-overlay', 'rgba(255, 240, 220, 0.48)');
+          if (body) body.classList.remove('topbar-night');
+        } else { // night
+          topBar.style.setProperty('--topbar-overlay', 'rgba(30, 28, 40, 0.5)');
+          if (body) body.classList.add('topbar-night');
+        }
+      }
+
       if (rain)    rain.style.display    = 'block';
       if (sunGlow) sunGlow.style.display = 'none';
     }
@@ -95,7 +117,20 @@ const SceneManager = {
     const now = new Date();
     const h   = now.getHours().toString().padStart(2, '0');
     const m   = now.getMinutes().toString().padStart(2, '0');
-    timeEl.textContent = `${h}:${m}`;
+
+    // 时段 emoji + 副标题
+    const tod = this._getTimeOfDay();
+    const decorMap = {
+      day:   { icon: '☀', label: '喵喵屋 · 午后' },
+      dusk:  { icon: '🌅', label: '喵喵屋 · 傍晚' },
+      night: { icon: '🌙', label: '喵喵屋 · 夜间' }
+    };
+    const decor = decorMap[tod] || decorMap.day;
+
+    timeEl.innerHTML = `
+      <strong>${decor.icon} ${h}:${m}</strong>
+      <span class="time-label">${decor.label}</span>
+    `;
   },
 
   // ---------- 浮尘粒子 ----------

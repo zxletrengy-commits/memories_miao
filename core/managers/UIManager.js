@@ -71,7 +71,13 @@ const UIManager = {
     const text   = dialoguePool[Math.floor(Math.random() * dialoguePool.length)];
     const bubble = document.createElement('div');
     bubble.className   = `dialogue-bubble bubble-${charKey}`;
-    bubble.textContent = text;
+    const textSpan = document.createElement('span');
+    textSpan.className = 'bubble-text';
+    textSpan.textContent = text;
+    bubble.appendChild(textSpan);
+    const paws = document.createElement('span');
+    paws.className = 'bubble-paws';
+    bubble.appendChild(paws);
 
     if (wrapper) {
       const rect = wrapper.getBoundingClientRect();

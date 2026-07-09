@@ -14,7 +14,7 @@
   <canvas id="stars"></canvas>
 
   <div class="top-bar">
-    <button class="back-btn" onclick="goTo('index.html')">‹ BACK</button>
+    <button class="back-btn" onclick="goTo('index.html')">BACK</button>
     <button class="music-btn" id="musicBtn" onclick="toggleMusic()">
       <span class="icon">♪</span>
       <span class="label">ON</span>
@@ -26,6 +26,11 @@
   <div class="select-scene">
     <div class="scene-prompt">
       <p class="prompt-en fade-layer" style="animation-delay: 0.2s">Who would you like to meet today?</p>
+      <div class="prompt-deco fade-layer" style="animation-delay: 0.35s">
+        <span class="prompt-deco-line"></span>
+        <span class="prompt-deco-chr">✦</span>
+        <span class="prompt-deco-line"></span>
+      </div>
       <h1 class="prompt-cn fade-layer" style="animation-delay: 0.5s">你想见到的他</h1>
     </div>
 
@@ -63,6 +68,7 @@
 
     <footer class="page-footer" style="animation-delay: 1.3s">
       <p class="brand">✦ MEMORY ARCHIVE ✦</p>
+      <p class="select-footer-tagline">Choose a memory to unfold</p>
     </footer>
   </div>
 

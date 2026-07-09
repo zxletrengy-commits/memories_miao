@@ -332,7 +332,12 @@ const CharacterManager = {
       wrapper.removeEventListener('mousedown', wrapper._startDragHandler);
       wrapper.removeEventListener('touchstart', wrapper._startDragHandler);
     }
-    const startDrag = (e) => { e.preventDefault(); this._startDrag(e, charKey, wrapper); };
+    const startDrag = (e) => {
+      // 图标按钮区域不拦截，让浏览器正常合成 click 事件
+      if (e.target.closest('.action-icons')) return;
+      e.preventDefault();
+      this._startDrag(e, charKey, wrapper);
+    };
     wrapper._startDragHandler = startDrag;
     wrapper.addEventListener('mousedown', startDrag);
     wrapper.addEventListener('touchstart', startDrag, { passive: false });

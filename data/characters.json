@@ -29,14 +29,14 @@
     "preferredZones": ["sleep", "plant", "clean", "relax", "lobby"],
     "dragGifs": { "left": "left.gif", "center": "Followme.gif", "right": "right.gif", "widthPct": 20, "sideWidthPct": 18 },
     "dialoguePool": [
-      "你终于来了…我等了好久。",
+      "你终于来了…我等了好久",
       "今天海风很舒服，你感觉到了吗？",
       "想听我哼首歌吗？",
-      "这幅画，还差一笔——你。",
-      "喂，别一直盯着我看啊。",
-      "这里的咖啡…没你泡的好喝。",
+      "这幅画，还差一笔——你",
+      "喂，别一直盯着我看啊",
+      "这里的咖啡…没你泡的好喝",
       "下次一起去海边吧？",
-      "你身上有阳光的味道。"
+      "你身上有阳光的味道"
     ]
   },
   "lishen": {
@@ -69,14 +69,14 @@
     "preferredZones": ["sleep", "plant", "clean", "relax", "lobby"],
     "dragGifs": { "left": "LeftDrag.gif", "center": "Dance.gif", "right": "RightDrag.gif", "widthPct": 18, "sideWidthPct": 21 },
     "dialoguePool": [
-      "你来了。今天还顺利吗？",
-      "咖啡要凉了。",
-      "外面下雪了…靠近一点吧。",
-      "别太累，休息一下。",
-      "我在看你的消息。每一条。",
+      "你来了…今天还顺利吗？",
+      "咖啡要凉了",
+      "外面下雪了…靠近一点吧",
+      "别太累，休息一下",
+      "我在看你的消息…每一条",
       "想听听我今天遇到的事吗？",
-      "这份报告…算了，晚点再写。",
-      "和你在一起的时间，总是过得太快。"
+      "这份报告…算了，晚点再写",
+      "和你在一起的时间，总是过得太快"
     ]
   }
 }

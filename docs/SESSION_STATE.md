@@ -6,47 +6,49 @@
 
 ## 当前项目状态
 
-**能跑，双角色全功能正常。** 本次会话完成了黎深的 gif 迁移、坐标调整、拖拽配置，以及手机端点击/气泡偏移的修复。
+**能跑，双角色全功能正常。**
 
 ## 最近做了什么（按时间顺序）
 
-1. **祁煜 gif 尺寸微调**
-   - Followme.gif（中间拖拽）调整为 20%
-   - 左右拖拽 `sideWidthPct` 调整为 18%
-   - 各状态 gif 坐标按小梓提供数据全部更新
+1. **select 页 PC 端内容偏上修复**
+   - 在 `@media (min-width: 601px)` 中给 `.select-scene` 加 `padding-top: 60px`
+   - 手机端不受影响
 
-2. **接待区装饰 PNG 手机端大小调整**
-   - 手机端 `.lobby-decoration` 从 60% 调到 53%
+2. **cafe 页顶栏时间框夜间亮色**
+   - 新增 `.cafe-body.topbar-night .top-bar-time` 和 `strong` 夜间样式
+   - 夜间时间数字和标签自动变为浅米白色，与按钮风格一致
+   - 背景/边框也同步变暗半透明
 
-3. **黎深 gif 重命名**
-   - 全部中文文件名改为英文（20 个文件）
-   - 对应修改 `data/characters.json` 和 `data/characters-inline.js`
+3. **对话框样式翻新（大改）**
+   - 背景：深黑半透明 → 暖白实底 `rgba(255,252,246,0.95)`
+   - 边框：`1.5px solid #6B544C` 深暖棕
+   - 文字：`#6B544C`，字体换为 `Microsoft YaHei` 圆润无衬线
+   - 文字块整体居中，换行时行间左对齐（`fit-content` + `margin: auto`）
+   - 左侧 padding 28px 略宽于右侧
+   - 尾巴三角改为旋转方块 + 边框，尾巴边缘有棕色边线
+   - 对角猫爪印：SVG 实绘，`.bubble-paws` 子容器 + `overflow:hidden` 裁半爪
 
-4. **黎深状态配置**
-   - 五个热区状态分配完成（含随机双 gif 的 sleep/clean/relax）
-   - 拖拽：左 LeftDrag.gif、右 RightDrag.gif、中 Dance.gif（18%/21%/20% → 后调为 18%）
-   - sleep/relax 热区黎深 z-index 降为 8（在祁煜下面）
-   - clean 热区双人模式互斥逻辑已实现（手动拖拽不受限）
+4. **对话文本去句号**
+   - 所有单句末尾 `。` 删除
+   - 中间断句的 `。` 改为 `…`
+   - 问号 `？` 保留
+   - `characters.json` 和 `characters-inline.js` 已同步
 
-5. **编辑模式按钮隐藏**
-   - `editor-mode.js` 的 `createToggleButton` 清空，按钮不再渲染
-   - `E` 键快捷键保留，编辑系统完整保留
+5. **行为准则**
+   - 只修 bug 加小结构，不重构除非有明确指令（见 `MEMORY.md`）
 
-6. **手机端 touch 点击修复**
-   - `touchstart` 的 `preventDefault` 会阻止 `click`，改为在 `touchend` 判断未移动时手动触发点击逻辑
+## 下一步要做的事（未完成）
 
-7. **对话气泡手机端偏移修复**
-   - 根因：`cafeScene` 有 `transform: translateX(-50%)`，导致 `position: fixed` 子元素坐标系失效
-   - 修复：`bubbleLayer` 和 `.dialogue-bubble` 改为 `position: absolute`，坐标基准改用 `cafeScene.getBoundingClientRect()`
-
-## 下一步要做的事（未完成，下次接手从这里开始）
-
-暂无明确待办，小梓 commit 后继续。
+### 【待做】聊天框前端 + DeepSeek Vision 识图
+- 目标：搭一个微信风格的聊天页，支持粘贴/拖入图片，后端调 DeepSeek Vision API 识图，返回 UI 描述辅助开发
+- 前端：微信风消息列表、图片粘贴/拖拽上传、消息历史
+- 后端：Python 服务接收图片 → DeepSeek Vision → 返回描述文字
 
 ## 已知未解决/待观察的小问题
 
 - `UIManager.toggleMusic()` 和 `script.js` 全局 `toggleMusic()` 并存，行为一致但没统一，暂不影响功能
 - 编辑器保存的配置目前需要手动转达，还没做自动写回 `characters.json` 的功能
+- 猫爪印 SVG 形状可能需要进一步优化或用素材图替换
 
 ## 快速定位指南
 
@@ -54,5 +56,7 @@
 - 热区位置/大小 → `cafe.html` 里的 `.drop-zone` 元素 + `style.css`
 - 角色渲染逻辑 → `core/managers/CharacterManager.js`
 - 拖拽逻辑 → `CharacterManager._onDrag` / `_endDrag`
-- 对话气泡定位 → `UIManager.showBubble`，坐标相对 `#cafeScene`
+- 对话气泡定位/样式 → `UIManager.showBubble` + `style.css` 的 `.dialogue-bubble` 系列
+- 顶栏时间/背景 → `SceneManager.js` + `style.css` 的 `.cafe-top-bar` / `.top-bar-time`
+- select 页 → `select.html` + `style.css` 的 `.select-scene` / `.scene-choices`
 - 编辑模式入口 → 按 `E` 键（按钮已隐藏但系统保留）

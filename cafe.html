@@ -16,9 +16,13 @@
 
   <!-- 顶部栏 -->
   <div class="top-bar cafe-top-bar">
-    <button class="back-btn" onclick="goTo('select.html')">‹ BACK</button>
+    <button class="back-btn" onclick="goTo('select.html')">BACK</button>
+    <!-- 时间框绝对居中 -->
+    <span class="cafe-time top-bar-time" id="cafeTime">--:--</span>
     <div class="top-bar-meta">
-      <span class="cafe-time top-bar-time" id="cafeTime">--:--</span>
+      <button class="fullscreen-btn" id="fullscreenBtn" onclick="enterFullscreen()" style="display:none;">
+        <span class="icon">⛶</span>
+      </button>
       <button class="music-btn" id="musicBtn" onclick="toggleMusic()">
         <span class="icon">♪</span>
         <span class="label">ON</span>
@@ -83,7 +87,7 @@
     <div class="bubble-layer" id="bubbleLayer"></div>
   </div>
 
-  <script src="script.js"></script>
+  <script src="script.js?v=2"></script>
 
   <!-- World 全局状态 -->
   <script src="core/world.js"></script>
@@ -123,17 +127,18 @@
         }
       });
 
-      // 手机端第一次点击请求全屏
-      if (/Mobi|Android/i.test(navigator.userAgent)) {
-        document.addEventListener('click', function requestFS() {
-          const el = document.documentElement;
-          if (el.requestFullscreen) {
-            el.requestFullscreen().catch(() => {});
-          } else if (el.webkitRequestFullscreen) {
-            el.webkitRequestFullscreen();
-          }
-          document.removeEventListener('click', requestFS);
-        }, { once: true });
+      // 手机端显示全屏按钮
+      if (/Mobi|Android/i.test(navigator.userAgent) || window.innerWidth <= 768) {
+        document.getElementById('fullscreenBtn').style.display = 'inline-flex';
+        // 已经全屏则隐藏按钮
+        document.addEventListener('fullscreenchange', () => {
+          document.getElementById('fullscreenBtn').style.display =
+            document.fullscreenElement ? 'none' : 'inline-flex';
+        });
+        document.addEventListener('webkitfullscreenchange', () => {
+          document.getElementById('fullscreenBtn').style.display =
+            document.webkitFullscreenElement ? 'none' : 'inline-flex';
+        });
       }
     });
   </script>

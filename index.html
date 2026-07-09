@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Inter:wght@300&family=Noto+Serif+SC:wght@300;400&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
+  <script>document.head.insertAdjacentHTML('beforeend','<link rel="stylesheet" href="style.css?v='+Date.now()+'">')</script>
 </head>
 <body>
 
@@ -15,15 +15,24 @@
 
   <div class="container">
     <h1 class="main-title fade-layer" style="animation-delay: 0.2s">Beyond the Stars</h1>
-    <p class="sub">
-      <span class="sub-en fade-layer" style="animation-delay: 0.2s">A place where memories stay forever</span>
-      <span class="sub-cn fade-layer" style="animation-delay: 0.5s">愿这里，成为回忆永不褪色的地方</span>
-    </p>
-   <button class="enter-btn fade-layer" style="animation-delay: 0.9s" onclick="goTo('loading.html')">
-     <span class="btn-en">Enter</span>
-     <span class="btn-cn">进入</span>
-   </button>
+    <div class="title-divider" style="animation-delay: 0.35s">
+      <span class="divider-line"></span>
+      <span class="divider-dot">✦</span>
+      <span class="divider-line"></span>
+    </div>
   </div>
+
+  <div class="btn-wrapper" style="animation: fadeIn 1.2s ease both; animation-delay: 0.9s">
+    <button class="enter-btn" onclick="enterTransition()">
+      <span class="btn-en">Enter</span>
+      <span class="btn-cn">进入</span>
+    </button>
+  </div>
+
+  <p class="sub">
+    <span class="sub-en">Where every memory still shines</span>
+    <span class="sub-cn">愿这里，成为回忆永不褪色的地方</span>
+  </p>
 
   <script src="script.js"></script>
 </body>
