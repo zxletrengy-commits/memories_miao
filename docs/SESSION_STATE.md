@@ -19,14 +19,14 @@
    - 夜间时间数字和标签自动变为浅米白色，与按钮风格一致
    - 背景/边框也同步变暗半透明
 
-3. **对话框样式翻新（大改）**
-   - 背景：深黑半透明 → 暖白实底 `rgba(255,252,246,0.95)`
-   - 边框：`1.5px solid #6B544C` 深暖棕
-   - 文字：`#6B544C`，字体换为 `Microsoft YaHei` 圆润无衬线
-   - 文字块整体居中，换行时行间左对齐（`fit-content` + `margin: auto`）
-   - 左侧 padding 28px 略宽于右侧
-   - 尾巴三角改为旋转方块 + 边框，尾巴边缘有棕色边线
-   - 对角猫爪印：SVG 实绘，`.bubble-paws` 子容器 + `overflow:hidden` 裁半爪
+3. **对话框样式翻新（第二版）**
+   - 奶油白实底 `#FFF8F0` + 波点纹理（`radial-gradient` 浅米圆点）
+   - 边框：`2px solid #D3A07A`（暖浅棕），圆角 20px
+   - 文字：`#664F46` 深棕褐，字号 15px
+   - 内边距：均匀 `12px 16px`
+   - 尾巴：居中朝下，指向人物头顶
+   - 字体：PingFang SC 优先
+   - 右下角 Iconfont 猫爪水印（单爪，20%透明度，-45°旋转）
 
 4. **对话文本去句号**
    - 所有单句末尾 `。` 删除
@@ -37,18 +37,49 @@
 5. **行为准则**
    - 只修 bug 加小结构，不重构除非有明确指令（见 `MEMORY.md`）
 
+6. **Chat Tool 识图工具搭建**
+   - 位置：`D:\A\chat-tool\`
+   - 前端：微信风聊天界面，支持截图粘贴/拖拽上传
+   - 后端：Flask 双引擎路由——纯文本走 DeepSeek V4 Pro，含图片走 SiliconFlow Qwen3-VL-8B（免费）
+   - 保存每次对话到 `_last_response.json`，供 Claude 读取分析结果
+   - 用于辅助 memories 项目的 UI 视觉设计参考
+
+7. **安装 Anthropic Skills**
+   - 在 `.claude/skills/` 添加了 4 个 skill：`frontend-design`、`theme-factory`、`canvas-design`、`algorithmic-art`
+
+8. **黄昏时段调整**
+   - 黄昏从 `16:00~18:59` 改为 `17:00~19:59`
+
+9. **功能图标改造（大改）**
+   - 图标从顶部横排改为**弧形侧边排列**，自动识别 chibi 左右空间切换方向
+   - 图标层级提升到气泡之上（`z-index: 55`）
+   - 点击时当前 chibi 提到最前（`z-index: 100`）
+   - 三个操作图标替换为 Iconfont 原版 SVG：
+     - ❄️ 黎深·回忆 → 晶体雪花
+     - 🐟 祁煜·回忆 → 小鱼
+     - 🖼 相册 → 风景相框
+     - 📖 日记 → 书本
+   - 图标按钮颜色改为暖白底暖棕边，适配喵喵屋风格
+
+10. **黎深拖拽大小调优**
+    - 中间 18%、左右 20%
+
+11. **气泡猫爪水印**
+    - 从 Iconfont 获取猫爪 SVG，右下角单爪水印（20%透明度，-45°旋转）
+    - 波点纹理保留不变
+
 ## 下一步要做的事（未完成）
 
-### 【待做】聊天框前端 + DeepSeek Vision 识图
-- 目标：搭一个微信风格的聊天页，支持粘贴/拖入图片，后端调 DeepSeek Vision API 识图，返回 UI 描述辅助开发
-- 前端：微信风消息列表、图片粘贴/拖拽上传、消息历史
-- 后端：Python 服务接收图片 → DeepSeek Vision → 返回描述文字
+### 【待观察】顶部栏与场景衔接处色差线
+- 顶部栏底部与场景背景之间有一条细微的视觉"线"
+- 尝试过：叠加层渐变淡出（回退）、移除 `overflow:hidden` 让模糊延伸（回退）、新增场景模糊过渡层 `scene-blur-bridge`（回退）
+- 待用户想好描述后再继续
 
 ## 已知未解决/待观察的小问题
 
 - `UIManager.toggleMusic()` 和 `script.js` 全局 `toggleMusic()` 并存，行为一致但没统一，暂不影响功能
 - 编辑器保存的配置目前需要手动转达，还没做自动写回 `characters.json` 的功能
-- 猫爪印 SVG 形状可能需要进一步优化或用素材图替换
+- 顶部栏底部与场景之间有细微色差线，待处理
 
 ## 快速定位指南
 
@@ -57,6 +88,7 @@
 - 角色渲染逻辑 → `core/managers/CharacterManager.js`
 - 拖拽逻辑 → `CharacterManager._onDrag` / `_endDrag`
 - 对话气泡定位/样式 → `UIManager.showBubble` + `style.css` 的 `.dialogue-bubble` 系列
+- 功能图标弧形排列 → `UIManager.toggleIcons` + `style.css` 的 `.action-icons` 系列
 - 顶栏时间/背景 → `SceneManager.js` + `style.css` 的 `.cafe-top-bar` / `.top-bar-time`
 - select 页 → `select.html` + `style.css` 的 `.select-scene` / `.scene-choices`
 - 编辑模式入口 → 按 `E` 键（按钮已隐藏但系统保留）

@@ -72,7 +72,7 @@ const CHARACTER_DATA = {
       ]}
     },
     "preferredZones": ["sleep", "plant", "clean", "relax", "lobby"],
-    "dragGifs": { "left": "LeftDrag.gif", "center": "Dance.gif", "right": "RightDrag.gif", "widthPct": 18, "sideWidthPct": 21 },
+    "dragGifs": { "left": "LeftDrag.gif", "center": "Dance.gif", "right": "RightDrag.gif", "widthPct": 18, "sideWidthPct": 20 },
     "dialoguePool": [
       "你来了…今天还顺利吗？",
       "咖啡要凉了",

@@ -35,8 +35,8 @@ const SceneManager = {
   // ---------- 时段判断 ----------
   _getTimeOfDay() {
     const h = new Date().getHours();
-    if (h >= 6 && h < 16) return 'day';
-    if (h >= 16 && h < 19) return 'dusk';
+    if (h >= 6 && h < 17) return 'day';
+    if (h >= 17 && h < 20) return 'dusk';
     return 'night';
   },
 
@@ -97,7 +97,6 @@ const SceneManager = {
           if (body) body.classList.add('topbar-night');
         }
       }
-
       if (rain)    rain.style.display    = 'block';
       if (sunGlow) sunGlow.style.display = 'none';
     }
