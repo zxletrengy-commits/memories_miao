@@ -19,19 +19,43 @@
   <audio id="bgm" src="assets/bgm.mp3" loop></audio>
 
   <div class="scaled-page">
-    <header class="memory-header">
-      <div class="char-title-block">
-        <div class="prompt-deco">
-          <span class="prompt-deco-line"></span>
-          <span class="prompt-deco-chr">✦</span>
-          <span class="prompt-deco-line"></span>
-        </div>
-        <h1>黎深</h1>
-        <span class="char-title-en">Zayne</span>
-      </div>
-      <p class="char-quote">"无论未来多么深邃，我都会在你身边。"</p>
-    </header>
 
+    <!-- ====== 玻璃档案卡 ====== -->
+    <div class="memory-card" data-char="lishen">
+      <div class="card-glass">
+
+        <!-- 星云背景 -->
+        <div class="card-nebula"></div>
+
+        <!-- 左上 SVG 四角星 -->
+        <svg class="card-star-tl" viewBox="0 0 28 28">
+          <path d="M14 0l4 10 10 4-10 4-4 10-4-10L0 14l10-4z" fill="rgba(255,255,255,.55)"/>
+          <path d="M14 2l3.2 8.2 8.8 3.8-8.8 3.2L14 26l-3.2-8.8L2 14l8.8-3.8z" fill="rgba(255,255,255,.18)"/>
+        </svg>
+
+        <!-- 人物立绘 -->
+        <div class="card-portrait">
+          <img src="assets/thing/Li 1.png" alt="黎深">
+          <div class="card-portrait-bloom"></div>
+          <div class="card-backlight"></div>
+        </div>
+
+        <!-- 文字叠加层 -->
+        <div class="card-text-overlay">
+          <h1 class="card-name-cn">黎深</h1>
+          <span class="card-name-en">Zayne</span>
+          <p class="card-quote">"无论未来多么深邃，<br>我都会在你身边。"</p>
+        </div>
+
+
+        <!-- 玻璃高光线 -->
+        <div class="card-highlight-tl"></div>
+        <div class="card-highlight-tr"></div>
+        <div class="card-crystal-br"></div>
+      </div>
+    </div>
+
+    <!-- 碎片卡片 -->
     <div class="fragment-grid">
       <div class="fragment" onclick="openFragment(this)"
            data-title="第一次相遇"
@@ -39,21 +63,18 @@
         <div class="icon">✦</div>
         <div class="frag-title">第一次相遇</div>
       </div>
-
       <div class="fragment" onclick="openFragment(this)"
            data-title="雪山的约定"
            data-text="在这里写下你印象最深的一段剧情。">
         <div class="icon">✦</div>
         <div class="frag-title">雪山的约定</div>
       </div>
-
       <div class="fragment" onclick="openFragment(this)"
            data-title="专属语音"
            data-text="在这里粘贴你最喜欢的一句专属语音文本。">
         <div class="icon">✦</div>
         <div class="frag-title">专属语音</div>
       </div>
-
       <div class="fragment" onclick="openFragment(this)"
            data-title="写给他的话"
            data-text="在这里写下你想对他说的话。">

@@ -160,11 +160,24 @@ const UIManager = {
     World.setUIState({ activeCharKey: null });
   },
 
-  // ---------- 音乐 ----------
+  // ---------- 音乐（多曲随机播放） ----------
+  _pickRandomTrack() {
+    const tracks = window._musicTracks || ['track1'];
+    return 'assets/music/' + tracks[Math.floor(Math.random() * tracks.length)] + '.mp3';
+  },
+
+  _playNextTrack(audio) {
+    audio.src = this._pickRandomTrack();
+    audio.play().catch(() => {});
+  },
+
   initMusic() {
     const audio      = document.getElementById('bgm');
     const btn        = document.getElementById('musicBtn');
     if (!audio || !btn) return;
+
+    // 播完自动切下一首
+    audio.addEventListener('ended', () => this._playNextTrack(audio));
 
     const savedState = localStorage.getItem('bgm-on');
     if (savedState === 'off') {
@@ -172,6 +185,7 @@ const UIManager = {
       btn.querySelector('.label').textContent = 'OFF';
       World.setUIState({ musicOn: false });
     } else {
+      audio.src = this._pickRandomTrack();
       audio.play().catch(() => {});
       World.setUIState({ musicOn: true });
     }
@@ -183,6 +197,7 @@ const UIManager = {
     if (!audio || !btn) return;
 
     if (audio.paused) {
+      audio.src = this._pickRandomTrack();
       audio.play();
       btn.classList.remove('off');
       btn.querySelector('.label').textContent = 'ON';
