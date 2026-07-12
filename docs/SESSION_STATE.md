@@ -8,7 +8,32 @@
 
 **能跑，双角色全功能正常。**
 
+## 记忆索引
+
+墨墨的个人记忆存在 `C:\Users\ZZX\.claude\projects\D--A-memories\memory\`，跨窗口持久化。每次新会话应读取 MEMORY.md 索引。
+
 ## 最近做了什么（按时间顺序）
+
+1. **memory 页玻璃收藏档案卡重设计（2026-07-12）**
+   - 祁煜/黎深页全新玻璃质感人物卡片（440×710px 桌面端，240px 手机端）
+   - 星云背景 + 多层边框 + SVG 四角星 + 粒子光尘
+   - 文字左对齐布局：中文名 58px 思源宋体 + 英文名 + 居中双行格言
+   - 分角色配色 — 祁煜蔷薇粉 `#FFF0F3` + 淡粉发光，黎深冰雪蓝 `#E8F4FD` + 冰蓝发光
+   - 碎片卡片圆角改为左上+右下圆，左下+右上直角
+   - 卡片底部装饰线：直线 + ✦ + 直线
+   - 新增立绘 `assets/thing/Li 1.png` 和 `Qi 1.png`
+   - CSS 新增约 380 行（`.card-glass` 全套 + 手机自适应）
+
+2. **2026-07-11 终端整理**
+   - 砍掉 psmux，WSL tmux 也退役，回归极简 Git Bash + Oh My Posh
+   - Oh My Posh 配色：文字 `⟩` 串联纯色风格（非 powerline）
+   - PowerShell 也配了同款（`Microsoft.PowerShell_profile.ps1`）
+   - 删除了 `~/bin/tmux`、`~/.tmux.conf`、`editor.html.bak` 等遗留文件
+
+3. **cafe 页 BGM 多曲随机播放**
+   - `UIManager.js` 新增 `_pickRandomTrack()` 和 `_playNextTrack()`
+   - `cafe.html` BGM 源切为空，音乐列表挂在 `window._musicTracks`
+   - ⚠️ 实际 mp3 文件（`assets/music/track1~5.mp3`）还未下载
 
 1. **select 页 PC 端内容偏上修复**
    - 在 `@media (min-width: 601px)` 中给 `.select-scene` 加 `padding-top: 60px`

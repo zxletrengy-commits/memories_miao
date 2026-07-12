@@ -27,8 +27,9 @@ body.fade-out { opacity: 0; }
 .fade-in { animation: fadeIn 0.6s ease; }
 html, body { overflow: hidden; height: 100%; }
 /* memory 页电脑端卡片太高需要滚动 */
+/* memory 页电脑端：html 和 body 都要开滚 */
 html:has(body[data-character]) { overflow-x: hidden; overflow-y: auto; height: auto; }
-body[data-character] { overflow-y: auto; height: auto; }
+body[data-character] { overflow-x: hidden; overflow-y: auto; height: auto; }
 
 @keyframes fadeIn {
   from { opacity: 0; }
@@ -314,7 +315,19 @@ body[data-character] { overflow-y: auto; height: auto; }
 
 .music-btn.off .icon { opacity: 0.4; }
 
-/* 全屏按钮样式（和音乐按钮一致） */
+
+/* 记忆页 — 全屏按钮圆润风格 */
+body[data-character] .fullscreen-btn {
+  width: 30px; height: 30px;
+  padding: 0;
+  border-radius: 50%;
+  justify-content: center;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.15);
+  color: var(--text);
+  font-size: 14px;
+}
+/* 全局全屏按钮（非记忆页） */
 .fullscreen-btn {
   height: 28px;
   padding: 0 10px;
@@ -459,7 +472,7 @@ body[data-character] { overflow-y: auto; height: auto; }
 .memory-card {
   display: flex;
   justify-content: center;
-  margin: 40px auto 0;
+  margin: 50px auto 0;
   padding: 0 16px;
 }
 
@@ -476,16 +489,13 @@ body[data-character] { overflow-y: auto; height: auto; }
   position: relative;
   width: var(--card-w);
   height: var(--card-h);
-  border-radius: var(--r);
-  overflow: hidden;
+  border-radius: var(--r) 0 var(--r) 0;
 
   /* 玻璃核心 */
   background:
     radial-gradient(ellipse at 30% 20%, rgba(175,168,255,.06) 0%, transparent 55%),
     radial-gradient(ellipse at 70% 80%, rgba(143,135,255,.04) 0%, transparent 50%),
     rgba(20, 24, 45, .32);
-  backdrop-filter: blur(18px) brightness(1.08) saturate(1.2);
-  -webkit-backdrop-filter: blur(18px) brightness(1.08) saturate(1.2);
 
   /* 四层边框 */
   /* ① 极细白描边 */
@@ -510,7 +520,7 @@ body[data-character] { overflow-y: auto; height: auto; }
   content: '';
   position: absolute;
   inset: -2px;
-  border-radius: calc(var(--r) + 2px);
+  border-radius: calc(var(--r) + 2px) 0 calc(var(--r) + 2px) 0;
   background: linear-gradient(160deg,
     rgba(255,255,255,.18) 0%,
     rgba(159,185,255,.08) 25%,
@@ -528,6 +538,8 @@ body[data-character] { overflow-y: auto; height: auto; }
   inset: 0;
   z-index: 0;
   pointer-events: none;
+  border-radius: inherit;
+  overflow: hidden;
   background:
     /* 主星云 */
     radial-gradient(ellipse at 35% 30%, rgba(175,168,255,.12) 0%, transparent 50%),
@@ -542,13 +554,13 @@ body[data-character] { overflow-y: auto; height: auto; }
 /* ---- 左上 SVG 星光 ---- */
 .card-star-tl {
   position: absolute;
-  top: clamp(10px, calc(var(--card-w) * 0.04), 18px);
-  left: clamp(12px, calc(var(--card-w) * 0.045), 20px);
-  width: clamp(18px, calc(var(--card-w) * 0.064), 28px);
-  height: clamp(18px, calc(var(--card-w) * 0.064), 28px);
+  top: clamp(12px, calc(var(--card-w) * 0.04), 18px);
+  left: clamp(14px, calc(var(--card-w) * 0.045), 20px);
+  width: clamp(12px, calc(var(--card-w) * 0.04), 18px);
+  height: clamp(12px, calc(var(--card-w) * 0.04), 18px);
   z-index: 8;
   pointer-events: none;
-  filter: drop-shadow(0 0 6px rgba(255,255,255,.35));
+  filter: drop-shadow(0 0 3px rgba(255,255,255,.85));
   animation: starPulse 3s ease-in-out infinite;
 }
 
@@ -557,11 +569,14 @@ body[data-character] { overflow-y: auto; height: auto; }
   50% { opacity: 1; transform: scale(1.12); }
 }
 
+
 /* ---- 人物立绘 ---- */
 .card-portrait {
   position: absolute;
   inset: 0;
   z-index: 2;
+  border-radius: inherit;
+  overflow: hidden;
 }
 
 .card-portrait img {
@@ -581,7 +596,6 @@ body[data-character] { overflow-y: auto; height: auto; }
   background:
     radial-gradient(ellipse at 50% 30%, rgba(175,168,255,.08) 0%, transparent 60%),
     radial-gradient(ellipse at 50% 50%, rgba(143,135,255,.05) 0%, transparent 70%);
-  mix-blend-mode: screen;
 }
 
 /* 神圣逆光 — 人物背后 */
@@ -597,18 +611,88 @@ body[data-character] { overflow-y: auto; height: auto; }
 }
 
 /* ---- 文字叠加层 ---- */
+/* ---- 卡片底部装饰线 ---- */
+.card-divider {
+  position: absolute;
+  left: 8px;
+  right: 40px;
+  bottom: 18px;
+  height: 1px;
+  display: flex;
+  align-items: center;
+  gap: 0px;
+  z-index: 7;
+  pointer-events: none;
+}
+
+.card-divider-line {
+  display: block;
+  flex: 1;
+  height: .5px;
+  background: rgba(190,185,235,.45);
+  box-shadow: 0 0 2px rgba(190,180,230,.25);
+  clip-path: polygon(0% 100%, 3% 50%, 0% 0%, 100% 0%, 97% 50%, 100% 100%);
+}
+.memory-card[data-char="lishen"] .card-divider-line {
+  background: rgba(200,215,240,.50);
+  box-shadow: 0 0 2px rgba(180,200,230,.25);
+}
+
+.card-divider-star-wrap {
+  position: relative;
+  width: 7px;
+  height: 7px;
+  flex-shrink: 0;
+  display: inline-block;
+}
+
+/* 小星本体 */
+.card-divider-star {
+  position: absolute;
+  inset: 0;
+  background: #fff;
+  clip-path: polygon(
+    50% 0%, 62% 38%, 100% 50%, 62% 62%, 50% 100%, 38% 62%, 0% 50%, 38% 38%
+  );
+  z-index: 1;
+}
+
+/* 单层圆形光斑 — 浮在星星后面 */
+.card-divider-star-glow {
+  position: absolute;
+  left: 50%; top: 50%;
+  transform: translate(-50%, -50%);
+  width: 14px; height: 14px;
+  border-radius: 50%;
+  z-index: 0;
+  /* 祁煜淡紫 — 和星云 rgba(207,174,255) 同色系 */
+  background: radial-gradient(circle,
+    rgba(255,240,250,.55) 0%,
+    rgba(207,174,255,.15) 50%,
+    rgba(201,168,255,0) 80%,
+    transparent 100%);
+}
+
+/* 黎深冰蓝 — 和星云 rgba(160,180,200) 同色系 */
+.memory-card[data-char="lishen"] .card-divider-star-glow {
+  background: radial-gradient(circle,
+    rgba(235,245,255,.50) 0%,
+    rgba(160,180,200,.12) 50%,
+    rgba(150,170,195,0) 80%,
+    transparent 100%);
+}
+
+
 .card-text-overlay {
   position: absolute;
   left: 34px;
-  right: auto;
   bottom: 70px;
   width: 320px;
-  z-index: 6;
+  z-index: 30;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   gap: 0;
-  pointer-events: none;
 }
 
 .card-name-cn {
@@ -616,85 +700,78 @@ body[data-character] { overflow-y: auto; height: auto; }
   font-size: 58px;
   font-weight: 560;
   letter-spacing: 1px;
-  color: rgba(255,255,255,.98);
+  color: rgba(255,255,255,.85);
   margin: 0;
   line-height: 1;
   text-align: left;
 }
-.memory-card[data-char="qiyu"] .card-name-cn   { text-shadow: 0 0 16px rgba(220,200,255,.75), 0 0 40px rgba(190,170,240,.45), 0 0 80px rgba(160,140,220,.25); }
-.memory-card[data-char="lishen"] .card-name-cn { text-shadow: 0 0 16px rgba(200,215,245,.75), 0 0 40px rgba(170,195,230,.45), 0 0 80px rgba(150,175,215,.25); }
+.memory-card[data-char="qiyu"] .card-name-cn {
+  text-shadow:
+    0 1px 3px rgba(0,0,0,.08),
+    0 0 6px rgba(255,230,238,.90),
+    0 0 20px rgba(245,200,215,.65),
+    0 0 45px rgba(235,170,190,.35);
+}
+.memory-card[data-char="lishen"] .card-name-cn {
+  text-shadow:
+    0 1px 3px rgba(0,0,0,.10),
+    0 0 6px rgba(230,245,255,.90),
+    0 0 20px rgba(200,225,250,.65),
+    0 0 45px rgba(180,210,245,.35);
+}
+.memory-card[data-char="lishen"] .card-name-cn,
+.memory-card[data-char="lishen"] .card-name-en,
+.memory-card[data-char="lishen"] .card-quote {
+  color: #E8F4FD;
+}
+.memory-card[data-char="qiyu"] .card-name-cn,
+.memory-card[data-char="qiyu"] .card-name-en,
+.memory-card[data-char="qiyu"] .card-quote {
+  color: #FFF0F3;
+}
+/* 祁煜碎片星星也换蔷薇色 */
+body[data-character="qiyu"] .fragment .icon {
+  color: #D4729A;
+}
 
 .card-name-en {
   font-family: "Cormorant Garamond", "Cinzel", "Playfair Display", serif;
-  font-size: 21px;
+  font-size: 22px;
   font-weight: 400;
   letter-spacing: 1.5px;
-  color: rgba(255,255,255,.88);
+  color: rgba(255,255,255,.78);
   margin: 12px 0 0 0;
   line-height: 1;
   text-align: left;
   text-transform: none;
 }
-.memory-card[data-char="qiyu"] .card-name-en   { text-shadow: 0 0 10px rgba(220,200,255,.65), 0 0 28px rgba(190,170,240,.35); }
-.memory-card[data-char="lishen"] .card-name-en { text-shadow: 0 0 10px rgba(200,215,245,.65), 0 0 28px rgba(170,195,230,.35); }
+.memory-card[data-char="qiyu"] .card-name-en {
+  text-shadow:
+    0 1px 2px rgba(0,0,0,.06),
+    0 0 4px rgba(255,235,240,.70),
+    0 0 16px rgba(245,205,218,.45);
+}
+.memory-card[data-char="lishen"] .card-name-en {
+  text-shadow:
+    0 1px 2px rgba(0,0,0,.08),
+    0 0 4px rgba(230,245,255,.70),
+    0 0 16px rgba(200,225,250,.45);
+}
 
 .card-quote {
   font-family: "Noto Serif SC", "PingFang SC", serif;
   font-size: 20px;
   font-weight: 400;
   letter-spacing: 0.8px;
-  color: rgba(255,255,255,.92);
+  color: rgba(255,255,255,.72);
   line-height: 1.9;
   text-align: center;
-  width: 320px;
-  max-width: 320px;
+  width: 300px;
+  max-width: 300px;
   margin: 42px 0 0 0;
 }
-.memory-card[data-char="qiyu"] .card-quote   { text-shadow: 0 0 8px rgba(220,200,255,.55), 0 0 24px rgba(190,170,240,.30); }
-.memory-card[data-char="lishen"] .card-quote { text-shadow: 0 0 8px rgba(200,215,245,.55), 0 0 24px rgba(170,195,230,.30); }
 
 
-/* ---- 玻璃高光线（反射） ---- */
-.card-highlight-tl {
-  position: absolute;
-  top: -1px; left: 20%;
-  width: 60%;
-  height: 2px;
-  z-index: 7;
-  pointer-events: none;
-  background: linear-gradient(to right,
-    rgba(255,255,255,0) 0%,
-    rgba(255,255,255,.20) 30%,
-    rgba(255,255,255,.08) 60%,
-    rgba(255,255,255,0) 100%);
-  border-radius: 1px;
-}
-
-.card-highlight-tr {
-  position: absolute;
-  top: 30%; right: -1px;
-  width: 2px; height: 25%;
-  z-index: 7;
-  pointer-events: none;
-  background: linear-gradient(to bottom,
-    rgba(255,255,255,0) 0%,
-    rgba(255,255,255,.12) 50%,
-    rgba(255,255,255,0) 100%);
-  border-radius: 1px;
-}
-
-/* 底部晶体碎片 */
-.card-crystal-br {
-  position: absolute;
-  bottom: 16px; right: 20px;
-  width: 10px; height: 10px;
-  z-index: 7;
-  pointer-events: none;
-  background:
-    linear-gradient(135deg, rgba(255,255,255,.20) 0%, rgba(255,255,255,0) 50%);
-  border-radius: 2px;
-  transform: rotate(15deg);
-}
 
 /* ---- 粒子（pseudo-elements） ---- */
 .card-glass::after {
@@ -737,11 +814,7 @@ body[data-character] { overflow-y: auto; height: auto; }
 .card-glass:hover .card-portrait img {
   filter: brightness(1.05);
 }
-
-.card-glass:hover .card-star-tl {
-  animation-duration: 1.5s;
-}
-
+.card-glass:hover .card-star-tl { animation-duration: 1.5s; }
 
 /* ====== 祁煜 · 紫色调 ====== */
 .memory-card[data-char="qiyu"] .card-glass {
@@ -774,25 +847,25 @@ body[data-character] { overflow-y: auto; height: auto; }
 
 .memory-card[data-char="lishen"] .card-nebula {
   background:
-    radial-gradient(ellipse at 35% 25%, rgba(186,203,255,.12) 0%, transparent 50%),
-    radial-gradient(ellipse at 65% 55%, rgba(175,168,255,.08) 0%, transparent 45%),
-    radial-gradient(ellipse at 50% 80%, rgba(220,231,255,.06) 0%, transparent 40%),
-    radial-gradient(circle at 20% 18%, rgba(255,255,255,.04) 0%, transparent 30%),
-    radial-gradient(circle at 80% 70%, rgba(186,203,255,.05) 0%, transparent 35%),
+    radial-gradient(ellipse at 35% 25%, rgba(160,180,200,.10) 0%, transparent 50%),
+    radial-gradient(ellipse at 65% 55%, rgba(150,160,190,.06) 0%, transparent 45%),
+    radial-gradient(ellipse at 50% 80%, rgba(180,200,215,.04) 0%, transparent 40%),
+    radial-gradient(circle at 20% 18%, rgba(255,255,255,.03) 0%, transparent 30%),
+    radial-gradient(circle at 80% 70%, rgba(160,180,200,.04) 0%, transparent 35%),
 }
 
 .memory-card[data-char="lishen"] .card-portrait-bloom {
   background:
-    radial-gradient(ellipse at 50% 30%, rgba(186,203,255,.10) 0%, transparent 60%),
-    radial-gradient(ellipse at 50% 55%, rgba(175,168,255,.06) 0%, transparent 70%);
+    radial-gradient(ellipse at 50% 30%, rgba(160,180,200,.08) 0%, transparent 60%),
+    radial-gradient(ellipse at 50% 55%, rgba(150,170,195,.04) 0%, transparent 70%);
 }
 
 .fragment-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-  gap: 20px;
-  max-width: 900px;
-  margin: 36px auto 0;
+  grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+  gap: 14px;
+  max-width: 660px;
+  margin: 10px auto 0;
   padding: 0 24px;
 }
 
@@ -800,7 +873,7 @@ body[data-character] { overflow-y: auto; height: auto; }
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid var(--accent-soft);
   border-radius: 16px;
-  padding: 24px 16px;
+  padding: 18px 6px;
   text-align: center;
   cursor: pointer;
   backdrop-filter: blur(6px);
@@ -966,7 +1039,7 @@ body[data-character] { overflow-y: auto; height: auto; }
   margin: 28px auto 0;
   background: linear-gradient(90deg, transparent, rgba(248, 246, 242, 0.18), transparent);
   border: none;
-  overflow: visible;
+  overflow: hidden;
 }
 
 .loading-bar-fill {
@@ -1752,11 +1825,8 @@ body[data-character] { overflow-y: auto; height: auto; }
 
 /* ---------- 手机自适应 ---------- */
 @media (max-width: 600px) {
-  /* 手机端卡片小，不需要滚动 */
-  html, body { overflow: hidden; height: 100%; }
-  /* memory 页手机端自动滚：内容超屏幕就滚动 */
-  html:has(body[data-character]) { overflow-x: hidden; overflow-y: auto; height: auto; }
-  body[data-character] { overflow-y: auto; height: auto; }
+  /* 只剩 memory 页锁死滚动 */
+  body[data-character] { overflow: hidden; height: 100%; }
 
   .container {
     transform: translate(-50%, -50%);
@@ -1814,11 +1884,15 @@ body[data-character] { overflow-y: auto; height: auto; }
     --card-w: 240px;
     --card-h: calc(var(--card-w) * 1.45);
   }
+  .memory-card { margin: 30px auto 0; }
   /* 手机端文字按比例缩小 */
-  .card-text-overlay { left: 14px; bottom: 16px; width: 170px; }
+  .card-text-overlay { left: 14px; bottom: 20px; width: 170px; }
   .card-name-cn { font-size: 24px; }
   .card-name-en { font-size: 11px; margin-top: 4px; }
-  .card-quote  { font-size: 12px; width: 170px; max-width: 170px; margin-top: 16px; }
+  .card-quote  { font-size: 12px; width: 160px; max-width: 160px; margin-top: 16px; }
+  .card-divider { left: 10px; right: 28px; bottom: 4px; }
+  .card-divider-star-wrap { width: 6px; height: 6px; }
+  .card-divider-star-glow { width: 12px; height: 12px; }
   body[data-character] .scaled-page {
     transform: none;
     height: auto;
@@ -1826,10 +1900,11 @@ body[data-character] { overflow-y: auto; height: auto; }
     padding-bottom: 40px;
   }
   .fragment-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 12px;
-    padding: 0 16px;
-    margin: 24px auto 0;
+    grid-template-columns: repeat(2, 100px);
+    gap: 10px;
+    padding: 0 12px;
+    margin: 10px auto 0;
+    justify-content: center;
   }
 
   .flip-card-wrapper {

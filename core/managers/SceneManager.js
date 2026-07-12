@@ -120,9 +120,9 @@ const SceneManager = {
     // 时段 emoji + 副标题
     const tod = this._getTimeOfDay();
     const decorMap = {
-      day:   { icon: '☀', label: '喵喵屋 · 午后' },
-      dusk:  { icon: '🌅', label: '喵喵屋 · 傍晚' },
-      night: { icon: '🌙', label: '喵喵屋 · 夜间' }
+      day:   { icon: '☀',  label: '喵喵屋 · 暖阳' },
+      dusk:  { icon: '🌅',  label: '喵喵屋 · 薄暮' },
+      night: { icon: '🌙',  label: '喵喵屋 · 星夜' }
     };
     const decor = decorMap[tod] || decorMap.day;
 

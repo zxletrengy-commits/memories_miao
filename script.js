@@ -132,6 +132,31 @@ function goTo(url) {
   setTimeout(() => { window.location.href = url; }, 350);
 }
 
+// ---------- memory 页 BACK 记忆 ----------
+var cafeBackUrl = 'cafe.html?char=lishen';
+(function() {
+  var char = document.body.getAttribute('data-character');
+  if (!char) return;
+
+  var cafeChar = '';
+  try {
+    var ref = document.referrer;
+    if (ref) {
+      var m = ref.match(/[?&]char=([^&]*)/);
+      if (m) cafeChar = decodeURIComponent(m[1]);
+    }
+  } catch (_) {}
+
+  if (!cafeChar) {
+    try { cafeChar = localStorage.getItem('cafe-last-char') || ''; } catch (_) {}
+  }
+  if (!cafeChar) cafeChar = char;
+  if (!cafeChar) cafeChar = 'lishen';
+  try { localStorage.setItem('cafe-last-char', cafeChar); } catch (_) {}
+
+  cafeBackUrl = 'cafe.html?char=' + encodeURIComponent(cafeChar);
+})();
+
 // ---------- 入口页 Enter 过渡动画 ----------
 function enterTransition() {
   const btn = document.querySelector('.enter-btn');
@@ -248,9 +273,19 @@ function toggleMusic() {
 
 // ---------- 全屏 ----------
 function enterFullscreen() {
-  const el = document.documentElement;
+  const doc = document;
+  const el  = document.documentElement;
+
+  // 已在全屏中 → 退出
+  if (doc.fullscreenElement || doc.webkitFullscreenElement) {
+    if (doc.exitFullscreen) { doc.exitFullscreen().catch(function(){}); }
+    else if (doc.webkitExitFullscreen) { doc.webkitExitFullscreen(); }
+    return;
+  }
+
+  // 进入全屏
   if (el.requestFullscreen) {
-    el.requestFullscreen().catch(() => {});
+    el.requestFullscreen().catch(function(){});
   } else if (el.webkitRequestFullscreen) {
     el.webkitRequestFullscreen();
   } else if (el.mozRequestFullScreen) {
@@ -259,6 +294,20 @@ function enterFullscreen() {
     el.msRequestFullscreen();
   }
 }
+
+// 显示全屏按钮的函数
+function showFullscreenBtn() {
+  var btn = document.getElementById('fullscreenBtn');
+  if (btn) btn.style.display = 'inline-flex';
+}
+// 记忆页：加一段初始化逻辑——如果是手机端，显示全屏按钮
+(function() {
+  var char = document.body.getAttribute('data-character');
+  if (!char) return; // 不是 memory 页不处理
+  if (/Mobi|Android/i.test(navigator.userAgent) || window.innerWidth <= 768) {
+    showFullscreenBtn();
+  }
+})();
 
 // ---------- 回忆碎片弹窗 ----------
 function openFragment(el) {
