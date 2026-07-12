@@ -281,6 +281,8 @@ function _musicPlayNext() {
 function _musicUpdateNowPlaying() {
   var audio = document.getElementById('bgm');
   var btn   = document.getElementById('musicBtn');
+  // 音浪条动画暂停/播放
+  document.body.classList.toggle('music-paused', audio && audio.paused);
   if (btn && audio) {
     var label = btn.querySelector('.label');
     if (audio.paused) { btn.classList.add('off'); if (label) label.textContent = 'OFF'; }
@@ -311,6 +313,7 @@ function toggleMusic() {
     btn.classList.add('off');
     btn.querySelector('.label').textContent = 'OFF';
     try { localStorage.setItem('bgm-on', 'off'); } catch(_) {}
+    document.body.classList.add('music-paused');
   }
 }
 

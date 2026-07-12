@@ -1457,6 +1457,7 @@ body[data-character="qiyu"] .fragment .icon {
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  position: relative;
   animation: slideUp .3s ease-out;
 }
 @keyframes slideUp {
@@ -1544,8 +1545,8 @@ body[data-character="qiyu"] .fragment .icon {
 .playlist-list::-webkit-scrollbar-thumb:hover { background: rgba(220,180,150,.80); }
 .cafe-body .playlist-list::-webkit-scrollbar-thumb { background: rgba(220,180,150,.45); }
 .cafe-body .playlist-list::-webkit-scrollbar-thumb:hover { background: rgba(220,180,150,.80); }
-.cafe-body.topbar-night .playlist-list::-webkit-scrollbar-thumb { background: rgba(184,200,255,.50); }
-.cafe-body.topbar-night .playlist-list::-webkit-scrollbar-thumb:hover { background: rgba(184,200,255,.80); }
+.cafe-body.topbar-night .playlist-list::-webkit-scrollbar-thumb { background: rgba(170,185,255,.28); }
+.cafe-body.topbar-night .playlist-list::-webkit-scrollbar-thumb:hover { background: rgba(190,205,255,.55); }
 
 .playlist-item {
   padding: 11px 40px 11px 26px;
@@ -1600,7 +1601,41 @@ body[data-character="qiyu"] .fragment .icon {
   margin-right: 18px;
 }
 .playlist-item.active::before { color: #B8C8FF; }
-.playlist-item.active::after { display: block; }
+.playlist-item.active::after { display: none; }
+
+/* 音浪条 — 播放中三帧轮播 */
+.music-bars {
+  position: absolute;
+  right: 14px; bottom: 10px;
+  width: 20px; height: 16px;
+  display: inline-flex;
+  align-items: flex-end;
+  pointer-events: none;
+}
+.music-bars .bars-svg {
+  width: 20px; height: 16px;
+  fill: rgba(184,200,255,.65);
+}
+.music-bars .bars-svg .b1,
+.music-bars .bars-svg .b2,
+.music-bars .bars-svg .b3 {
+  animation: barCycle 0.9s steps(1) infinite;
+}
+.music-bars .bars-svg .b2 { animation-delay: 0.3s; }
+.music-bars .bars-svg .b3 { animation-delay: 0.6s; }
+
+@keyframes barCycle {
+  0%, 32.9%   { opacity: 1; }
+  33%, 100%   { opacity: 0; }
+}
+
+/* 暂停状态 — 音浪条消失 */
+.music-paused .music-bars { display: none; }
+
+/* 白天暖调 */
+.cafe-body .music-bars .bars-svg { fill: rgba(90,60,40,.55); }
+/* 夜间冷调 */
+.cafe-body.topbar-night .music-bars .bars-svg { fill: rgba(184,200,255,.65); }
 
 /* hover */
 .playlist-item:hover { color: #fff; background: transparent; }
@@ -1643,9 +1678,20 @@ body[data-character="qiyu"] .fragment .icon {
 .cafe-body.topbar-night .playlist-panel {
   background:
     linear-gradient(180deg, rgba(170,180,255,.10), transparent 25%),
-    rgba(22,26,48,.68);
+    rgba(26,30,46,.60);
   border-color: rgba(255,255,255,.12);
   box-shadow: 0 20px 60px rgba(20,22,40,.20);
+  backdrop-filter: blur(22px) saturate(120%);
+  -webkit-backdrop-filter: blur(22px) saturate(120%);
+}
+.cafe-body.topbar-night .playlist-panel::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background: linear-gradient(180deg, rgba(175,190,255,.10), transparent 40%);
+  pointer-events: none;
+  border-radius: 24px 24px 0 0;
 }
 .cafe-body.topbar-night .playlist-item { color: rgba(205,214,244,.42); }
 .cafe-body.topbar-night .playlist-item:hover { color: rgba(205,214,244,.95); background: rgba(255,255,255,.04); }
@@ -1672,27 +1718,27 @@ body[data-character="qiyu"] .fragment .icon {
 .pl-dust {
   position: absolute;
   border-radius: 50%;
-  background: rgba(247,242,235,.65);
+  background: #DDE5FF;
   pointer-events: none;
   z-index: 5;
   animation: plFloat linear infinite;
 }
-.pl-dust.d1 { width: 2px; height: 2px; top: 12%; left: 20%; animation-duration: 18s; animation-delay: 0s; }
-.pl-dust.d2 { width: 3px; height: 3px; top: 30%; left: 75%; animation-duration: 22s; animation-delay: -5s; }
-.pl-dust.d3 { width: 2px; height: 2px; top: 55%; left: 12%; animation-duration: 26s; animation-delay: -10s; }
-.pl-dust.d4 { width: 3px; height: 3px; top: 70%; left: 65%; animation-duration: 20s; animation-delay: -15s; }
-.pl-dust.d5  { width: 2px; height: 2px; top: 45%; left: 88%; animation-duration: 24s; animation-delay: -3s; }
-.pl-dust.d6  { width: 3px; height: 3px; top: 18%; left: 48%; animation-duration: 21s; animation-delay: -7s; }
-.pl-dust.d7  { width: 2px; height: 2px; top: 62%; left: 32%; animation-duration: 28s; animation-delay: -12s; }
-.pl-dust.d8  { width: 3px; height: 3px; top: 78%; left: 82%; animation-duration: 19s; animation-delay: -2s; }
-.pl-dust.d9  { width: 2px; height: 2px; top: 38%; left: 56%; animation-duration: 25s; animation-delay: -9s; }
-.pl-dust.d10 { width: 2px; height: 2px; top: 85%; left: 42%; animation-duration: 23s; animation-delay: -6s; }
+.pl-dust.d1 { width: 2px; height: 2px; top: 12%; left: 20%; animation-duration: 18s; animation-delay: 0s; opacity: .18; }
+.pl-dust.d2 { width: 1px; height: 1px; top: 30%; left: 75%; animation-duration: 22s; animation-delay: -5s; opacity: .30; }
+.pl-dust.d3 { width: 3px; height: 3px; top: 55%; left: 12%; animation-duration: 26s; animation-delay: -10s; opacity: .15; }
+.pl-dust.d4 { width: 2px; height: 2px; top: 70%; left: 65%; animation-duration: 20s; animation-delay: -15s; opacity: .25; }
+.pl-dust.d5 { width: 1px; height: 1px; top: 45%; left: 88%; animation-duration: 24s; animation-delay: -3s; opacity: .35; }
+.pl-dust.d6 { width: 2px; height: 2px; top: 18%; left: 48%; animation-duration: 21s; animation-delay: -7s; opacity: .22; }
+.pl-dust.d7 { width: 3px; height: 3px; top: 62%; left: 32%; animation-duration: 28s; animation-delay: -12s; opacity: .28; }
+.pl-dust.d8 { width: 1px; height: 1px; top: 78%; left: 82%; animation-duration: 19s; animation-delay: -2s; opacity: .20; }
+.pl-dust.d9 { width: 2px; height: 2px; top: 38%; left: 56%; animation-duration: 25s; animation-delay: -9s; opacity: .32; }
+.pl-dust.d10 { width: 1px; height: 1px; top: 85%; left: 42%; animation-duration: 23s; animation-delay: -6s; opacity: .27; }
 
 @keyframes plFloat {
-  0%, 100%   { opacity: .20; transform: translate(0, 0); }
-  25%        { opacity: .40; transform: translate(8px, -10px); }
-  50%        { opacity: .25; transform: translate(-4px, -18px); }
-  75%        { opacity: .45; transform: translate(10px, -6px); }
+  0%, 100%   { opacity: .35; transform: translate(0, 0); }
+  25%        { opacity: .85; transform: translate(8px, -10px); }
+  50%        { opacity: .50; transform: translate(-4px, -18px); }
+  75%        { opacity: 1.0; transform: translate(10px, -6px); }
 }
 
 .top-bar-time .time-label {
