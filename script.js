@@ -59,7 +59,7 @@ function initStarfield() {
     stars.forEach(s => {
       s.phase += s.speed;
       let twinkle = Math.pow(Math.abs(Math.sin(s.phase)), 2);
-      twinkle = 0.15 + 0.85 * twinkle;
+      twinkle = 0.10 + 0.65 * twinkle;
       if (s.sparkle) {
         s.nextSparkle--;
         if (s.nextSparkle <= 0) { s.flashLife = 1; s.nextSparkle = 200 + Math.random() * 500; }

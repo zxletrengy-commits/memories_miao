@@ -316,15 +316,30 @@ body[data-character] { overflow-x: hidden; overflow-y: auto; height: auto; }
 .music-btn.off .icon { opacity: 0.4; }
 
 
+/* 记忆页 — 按钮玻璃材质 */
+body[data-character] .back-btn,
+body[data-character] .music-btn,
+body[data-character] .fullscreen-btn {
+  background: rgba(25,35,65,.45);
+  border: 1px solid rgba(255,255,255,.18);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  color: rgba(248,246,242,.85);
+}
+body[data-character] .back-btn:hover,
+body[data-character] .music-btn:hover,
+body[data-character] .fullscreen-btn:hover {
+  background: rgba(30,42,72,.55);
+  border-color: rgba(255,255,255,.28);
+  box-shadow: 0 0 24px rgba(180,190,255,.22);
+}
+
 /* 记忆页 — 全屏按钮圆润风格 */
 body[data-character] .fullscreen-btn {
   width: 30px; height: 30px;
   padding: 0;
   border-radius: 50%;
   justify-content: center;
-  background: rgba(255,255,255,0.06);
-  border: 1px solid rgba(255,255,255,0.15);
-  color: var(--text);
   font-size: 14px;
 }
 /* 全局全屏按钮（非记忆页） */
@@ -474,6 +489,7 @@ body[data-character] .fullscreen-btn {
   justify-content: center;
   margin: 50px auto 0;
   padding: 0 16px;
+  position: relative;
 }
 
 /* ---- 玻璃主体 ---- */
@@ -493,26 +509,35 @@ body[data-character] .fullscreen-btn {
 
   /* 玻璃核心 */
   background:
+    /* 顶部高光 — 玻璃反光 */
+    linear-gradient(180deg, rgba(255,255,255,.30) 0%, rgba(255,255,255,0) 15%),
     radial-gradient(ellipse at 30% 20%, rgba(175,168,255,.06) 0%, transparent 55%),
     radial-gradient(ellipse at 70% 80%, rgba(143,135,255,.04) 0%, transparent 50%),
     rgba(20, 24, 45, .32);
 
-  /* 四层边框 */
-  /* ① 极细白描边 */
-  border: 1px solid rgba(255,255,255,.30);
+  /* 多层边框 — 真实玻璃感 */
+  /* ① 内层白描边 */
+  border: 1px solid rgba(255,255,255,.35);
 
-  /* ②③④ 渐变发光 + 玻璃高光 + 柔光 — 全部用 box-shadow */
   box-shadow:
-    /* ② 蓝紫渐变发光 */
-    0 0 40px rgba(143,135,255,.12),
+    /* ② 内发光 — 沿边框内侧柔光 */
+    inset 0 0 0 1px rgba(255,255,255,.06),
+    /* ③ 外一：蓝紫光环 */
+    0 0 0 2px rgba(150,180,255,.18),
+    /* ④ 外二：柔白光圈 */
+    0 0 0 3px rgba(255,255,255,.06),
+    /* ⑤ 蓝紫外发光 */
+    0 0 40px rgba(150,170,255,.14),
     0 0 80px rgba(175,168,255,.08),
-    /* ③ 顶部玻璃高光 */
-    inset 0 1px 0 rgba(255,255,255,.10),
-    /* ④ 星空反射柔光 */
-    0 0 120px rgba(143,135,255,.06),
+    /* ⑥ 底部投影 */
     0 20px 60px rgba(10,8,30,.35);
 
   transition: transform .45s ease-out, box-shadow .45s ease-out, border-color .45s ease-out;
+  animation: cardDrift 10s ease-in-out infinite;
+}
+@keyframes cardDrift {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
 }
 
 /* ---- 渐变发光边框层（伪元素作为第二层边框） ---- */
@@ -653,6 +678,40 @@ body[data-character] .fullscreen-btn {
   top: clamp(12px, calc(var(--card-w) * 0.04), 18px);
   left: clamp(14px, calc(var(--card-w) * 0.045), 20px);
   filter: drop-shadow(0 0 3px rgba(255,255,255,.85));
+}
+/* 星星旁的晶屑碎片 — 向右下排开 */
+.card-star-dot {
+  position: absolute !important;
+  pointer-events: none;
+  z-index: 18;
+  animation: sparkFlicker 2.4s ease-in-out infinite;
+}
+.card-star-dot.d1 {
+  top: clamp(20px, calc(var(--card-w) * 0.062), 28px);
+  left: clamp(28px, calc(var(--card-w) * 0.078), 36px);
+  width: 4px; height: 4px;
+  clip-path: polygon(50% 0%, 100% 30%, 80% 100%, 20% 80%);
+  background: rgba(255,255,255,.95);
+  box-shadow: 0 0 3px rgba(255,255,255,.65), 0 0 7px rgba(175,168,255,.50);
+  animation-delay: 0s;
+}
+.card-star-dot.d2 {
+  top: clamp(30px, calc(var(--card-w) * 0.088), 38px);
+  left: clamp(38px, calc(var(--card-w) * 0.105), 48px);
+  width: 3px; height: 3.5px;
+  clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+  background: rgba(255,255,255,.90);
+  box-shadow: 0 0 3px rgba(255,255,255,.60);
+  animation-delay: .7s;
+}
+.card-star-dot.d3 {
+  top: clamp(26px, calc(var(--card-w) * 0.076), 34px);
+  left: clamp(46px, calc(var(--card-w) * 0.128), 56px);
+  width: 2.5px; height: 2.5px;
+  clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+  background: rgba(255,255,255,.85);
+  box-shadow: 0 0 2px rgba(255,255,255,.55), 0 0 5px rgba(175,168,255,.45);
+  animation-delay: 1.4s;
 }
 
 @keyframes starPulse {
@@ -893,12 +952,16 @@ body[data-character="qiyu"] .fragment .icon {
 /* ---- Hover 动画 ---- */
 .card-glass:hover {
   transform: translateY(-8px) scale(1.02);
+  animation-play-state: paused;
   border-color: rgba(255,255,255,.45);
   box-shadow:
-    0 0 60px rgba(143,135,255,.20),
-    0 0 120px rgba(175,168,255,.12),
-    inset 0 1px 0 rgba(255,255,255,.14),
-    0 0 180px rgba(143,135,255,.08),
+    /* 保持多层边框结构 */
+    inset 0 0 0 1px rgba(255,255,255,.10),
+    0 0 0 2px rgba(150,180,255,.25),
+    0 0 0 3px rgba(255,255,255,.10),
+    /* hover 加强发光 */
+    0 0 60px rgba(143,135,255,.22),
+    0 0 120px rgba(175,168,255,.14),
     0 30px 80px rgba(10,8,30,.40);
 }
 
