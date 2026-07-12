@@ -23,7 +23,7 @@ const UIManager = {
           <path d="M893.58 709.22l-83.45-48.18 53.06-35.03c9.22-6.09 11.76-18.49 5.67-27.71-6.09-9.22-18.5-11.76-27.71-5.67l-69.75 46.05-108.95-62.9-0.37-127.34 109.32-63.12 69.75 46.05c3.39 2.24 7.22 3.31 11 3.31 6.49 0 12.86-3.16 16.71-8.98 6.09-9.22 3.55-21.62-5.67-27.71l-53.06-35.03 83.45-48.18c9.57-5.52 12.84-17.75 7.32-27.32s-17.75-12.84-27.32-7.32l-83.45 48.18-3.81-63.47c-0.66-11.03-10.16-19.44-21.16-18.77-11.03 0.66-19.43 10.14-18.77 21.16l5.01 83.43-108.93 62.89L532 350.23V224l74.76-37.38c9.88-4.94 13.88-16.95 8.94-26.83-4.94-9.88-16.95-13.88-26.83-8.94L532 179.28V82.92c0-11.05-8.95-20-20-20s-20 8.95-20 20v96.36l-56.87-28.44c-9.88-4.94-21.89-0.93-26.83 8.94-4.94 9.88-0.94 21.89 8.94 26.83L492 224v125.8l-110.09 64-109.31-63.12 5.01-83.43c0.66-11.03-7.74-20.5-18.77-21.16-11.03-0.66-20.5 7.74-21.16 18.77l-3.81 63.47-83.45-48.18c-9.57-5.52-21.8-2.25-27.32 7.32s-2.25 21.8 7.32 27.32l83.45 48.18L160.81 398c-9.22 6.09-11.76 18.49-5.67 27.71 3.85 5.83 10.21 8.98 16.71 8.98 3.78 0 7.61-1.07 11-3.31l69.75-46.05 108.95 62.9 0.37 127.34-109.32 63.11-69.75-46.05c-9.22-6.08-21.62-3.55-27.71 5.67-6.09 9.22-3.55 21.62 5.67 27.71l53.06 35.03-83.45 48.18c-9.57 5.52-12.84 17.75-7.32 27.32 3.7 6.42 10.43 10 17.34 10 3.39 0 6.83-0.86 9.98-2.68l83.45-48.18 3.81 63.47c0.64 10.62 9.45 18.8 19.95 18.8 0.4 0 0.81-0.01 1.22-0.04 11.03-0.66 19.43-10.14 18.77-21.16l-5.01-83.43 108.93-62.89L492 673.77V800l-74.76 37.38c-9.88 4.94-13.88 16.95-8.94 26.83 3.5 7.01 10.57 11.06 17.9 11.06 3.01 0 6.06-0.68 8.93-2.12L492 844.72v96.36c0 11.05 8.95 20 20 20s20-8.95 20-20v-96.36l56.87 28.44c9.88 4.94 21.89 0.93 26.83-8.94 4.94-9.88 0.94-21.89-8.94-26.83L532 800V674.2l110.09-63.99 109.32 63.12-5.01 83.43c-0.66 11.03 7.74 20.5 18.77 21.16 0.41 0.02 0.81 0.04 1.22 0.04 10.5 0 19.31-8.19 19.95-18.8l3.81-63.47 83.45 48.18c3.15 1.82 6.59 2.68 9.98 2.68 6.91 0 13.63-3.59 17.34-10 5.51-9.58 2.23-21.81-7.34-27.33zM401.91 576.01l-0.37-127.36 110.08-63.99 110.46 63.33 0.37 127.36-110.08 63.99-110.46-63.33z" fill="currentColor"/>
         </svg>`
       : `<svg viewBox="0 0 1024 1024" width="22" height="22">
-          <path d="M768.284444 476.359111C700.188444 367.388444 593.891556 312.888889 449.308444 312.888889 213.987556 312.888889 113.777778 445.212444 113.777778 505.457778c0 60.188444 84.394667 192.512 335.530666 192.512 154.794667 0 262.087111-54.840889 321.848889-164.579556l107.861334 113.635556a12.913778 12.913778 0 0 0 22.272-8.903111V349.212444a12.913778 12.913778 0 0 0-22.926223-8.163555l-110.08 135.310222z m43.889778-189.155555a98.247111 98.247111 0 0 1 174.449778 62.008888v288.910223a98.247111 98.247111 0 0 1-169.500444 67.640889l-38.599112-40.675556c-79.104 78.734222-190.748444 118.215111-329.216 118.215111C198.485333 783.303111 28.444444 651.776 28.444444 505.457778 28.444444 362.951111 210.033778 227.555556 449.308444 227.555556c129.422222 0 237.084444 38.456889 318.378667 114.346666l44.487111-54.698666zM430.705778 739.413333l-71.765334-46.165333c27.875556-43.320889 47.701333-122.680889 47.701334-187.818667 0-53.703111-27.448889-139.036444-58.88-189.866666l72.590222-44.885334c39.310222 63.601778 71.623111 164.067556 71.623111 234.752 0 80.497778-23.808 175.786667-61.269333 233.984zM241.777778 562.346667a42.666667 42.666667 0 1 1 0-85.333334 42.666667 42.666667 0 0 1 0 85.333334z" fill="currentColor"/>
+          <path d="M768.284444 476.359111C700.188444 367.388444 593.891556 312.888889 449.308444 312.888889 213.987556 312.888889 113.777778 445.212444 113.777778 505.457778c0 60.188444 84.394667 192.512 335.530666 192.512 154.794667 0 262.087111-54.840889 321.848889-164.579556l107.861334 113.635556a12.913778 12.913778 0 0 0 22.272-8.903111V349.212444a12.913778 12.913778 0 0 0-22.926223-8.163555l-110.08 135.310222z m43.889778-189.155555a98.247111 98.247111 0 0 1 174.449778 62.008888v288.910223a98.247111 98.247111 0 0 1-169.500444 67.640889l-38.599112-40.675556c-79.104 78.734222-190.748444 118.215111-329.216 118.215111C198.485333 783.303111 28.444444 651.776 28.444444 505.457778 28.444444 362.951111 210.033778 227.555556 449.308444 227.555556c129.422222 0 237.084444 38.456888 318.378667 114.346666l44.487111-54.698666zM430.705778 739.413333l-71.765334-46.165333c27.875556-43.320889 47.701333-122.680889 47.701334-187.818667 0-53.703111-27.448889-139.036444-58.88-189.866666l72.590222-44.885334c39.310222 63.601778 71.623111 164.067556 71.623111 234.752 0 80.497778-23.808 175.786667-61.269333 233.984zM241.777778 562.346667a42.666667 42.666667 0 1 1 0-85.333334 42.666667 42.666667 0 0 1 0 85.333334z" fill="currentColor"/>
         </svg>`;
     memoryIcon.innerHTML = memorySvg;
     memoryIcon.addEventListener('click', (e) => {
@@ -65,7 +65,6 @@ const UIManager = {
     const bubbleLayer = document.getElementById('bubbleLayer');
     if (!bubbleLayer) return;
 
-    // 清除旧气泡
     if (this._bubbleTimers[charKey]) clearTimeout(this._bubbleTimers[charKey]);
     const oldBubble = bubbleLayer.querySelector('.bubble-' + charKey);
     if (oldBubble) oldBubble.remove();
@@ -104,7 +103,6 @@ const UIManager = {
     const icons = wrapper.querySelector('.action-icons');
     if (!icons) return;
 
-    // 关闭其他角色的图标
     document.querySelectorAll('.action-icons.show').forEach(el => {
       if (el.id !== 'icons-' + charKey) {
         el.classList.remove('show');
@@ -116,12 +114,10 @@ const UIManager = {
       }
     });
 
-    // 判断是否正在显示
     const willShow = !icons.classList.contains('show');
     const charLayer = document.getElementById('charLayer');
 
     if (willShow) {
-      // 自动判断显示在哪一侧
       const scene = document.getElementById('cafeScene');
       if (scene) {
         const sceneRect = scene.getBoundingClientRect();
@@ -130,13 +126,10 @@ const UIManager = {
         const sceneCenter = sceneRect.left + sceneRect.width / 2;
         icons.setAttribute('data-side', chibiCenter < sceneCenter ? 'right' : 'left');
       }
-      // 提升角色层 z-index 让图标浮在气泡上方
       if (charLayer) charLayer.style.zIndex = '55';
-      // 保存原始 z-index 并提到最前
       wrapper.dataset.origZ = wrapper.style.zIndex;
       wrapper.style.zIndex = '100';
     } else {
-      // 恢复角色层和 chibi 层级
       if (charLayer) charLayer.style.zIndex = '';
       wrapper.style.zIndex = wrapper.dataset.origZ || '';
     }
@@ -148,7 +141,6 @@ const UIManager = {
   closeAllIcons() {
     document.querySelectorAll('.action-icons.show').forEach(el => {
       el.classList.remove('show');
-      // 恢复 chibi 层级
       const owner = el.closest('.chibi-sprite');
       if (owner) {
         owner.style.zIndex = owner.dataset.origZ || '';
@@ -160,55 +152,75 @@ const UIManager = {
     World.setUIState({ activeCharKey: null });
   },
 
-  // ---------- 音乐（多曲随机播放） ----------
-  _pickRandomTrack() {
-    const tracks = window._musicTracks || ['track1'];
-    return 'assets/music/' + tracks[Math.floor(Math.random() * tracks.length)] + '.mp3';
+  // ---- 歌单（仅喵喵屋） ----
+  togglePlaylist() {
+    var overlay = document.getElementById('playlistOverlay');
+    if (!overlay) return;
+    if (overlay.classList.contains('open')) { this.closePlaylist(); return; }
+    this._buildPlaylist();
+    overlay.classList.add('open');
+    // overlay 显示后才能 scrollIntoView
+    var self = this;
+    requestAnimationFrame(function() {
+      requestAnimationFrame(function() {
+        self._scrollToActive();
+      });
+    });
   },
 
-  _playNextTrack(audio) {
-    audio.src = this._pickRandomTrack();
-    audio.play().catch(() => {});
+  _scrollToActive() {
+    var active = document.querySelector('#playlistList .playlist-item.active');
+    if (active) active.scrollIntoView({ block: 'center' });
   },
 
-  initMusic() {
-    const audio      = document.getElementById('bgm');
-    const btn        = document.getElementById('musicBtn');
-    if (!audio || !btn) return;
-
-    // 播完自动切下一首
-    audio.addEventListener('ended', () => this._playNextTrack(audio));
-
-    const savedState = localStorage.getItem('bgm-on');
-    if (savedState === 'off') {
-      btn.classList.add('off');
-      btn.querySelector('.label').textContent = 'OFF';
-      World.setUIState({ musicOn: false });
-    } else {
-      audio.src = this._pickRandomTrack();
-      audio.play().catch(() => {});
-      World.setUIState({ musicOn: true });
-    }
+  closePlaylist() {
+    var overlay = document.getElementById('playlistOverlay');
+    if (overlay) overlay.classList.remove('open');
   },
 
-  toggleMusic() {
-    const audio = document.getElementById('bgm');
-    const btn   = document.getElementById('musicBtn');
-    if (!audio || !btn) return;
+  _buildPlaylist() {
+    var list  = document.getElementById('playlistList');
+    if (!list) return;
+    var tracks = window._musicTracks || [];
+    var cur = (typeof _musicCurrentTrack !== 'undefined') ? _musicCurrentTrack : '';
+    list.innerHTML = tracks.map(function(t) {
+      var cls = (t === cur) ? ' playlist-item active' : 'playlist-item';
+      var bar = (t === cur) ? '<span class="now-bar"></span>' : '';
+      return '<div class="' + cls + '" data-track="' + t.replace(/"/g, '&quot;') + '">' + bar + t + '</div>';
+    }).join('');
+    var self = this;
+    list.querySelectorAll('.playlist-item').forEach(function(item) {
+      item.onclick = function() {
+        var name = this.getAttribute('data-track');
+        var cur  = (typeof _musicCurrentTrack !== 'undefined') ? _musicCurrentTrack : '';
+        // 点正在播放的歌 → 暂停/恢复
+        if (name === cur && typeof toggleMusic === 'function') {
+          toggleMusic();
+          self._rebuildPlaylist();
+          return;
+        }
+        // 切歌
+        if (typeof _musicPlayTrack === 'function') { _musicPlayTrack(name); }
+        self._rebuildPlaylist();
+      };
+    });
+  },
 
-    if (audio.paused) {
-      audio.src = this._pickRandomTrack();
-      audio.play();
-      btn.classList.remove('off');
-      btn.querySelector('.label').textContent = 'ON';
-      localStorage.setItem('bgm-on', 'on');
-      World.setUIState({ musicOn: true });
-    } else {
-      audio.pause();
-      btn.classList.add('off');
-      btn.querySelector('.label').textContent = 'OFF';
-      localStorage.setItem('bgm-on', 'off');
-      World.setUIState({ musicOn: false });
+  _rebuildPlaylist() {
+    this._buildPlaylist();
+    var self = this;
+    requestAnimationFrame(function() {
+      requestAnimationFrame(function() {
+        self._scrollToActive();
+      });
+    });
+    // 同步 ♪ 按钮 ON/OFF
+    var audio = document.getElementById('bgm');
+    var btn = document.getElementById('musicBtn');
+    if (btn && audio) {
+      var label = btn.querySelector('.label');
+      if (audio.paused) { btn.classList.add('off'); if (label) label.textContent = 'OFF'; }
+      else { btn.classList.remove('off'); if (label) label.textContent = 'ON'; }
     }
   }
 };

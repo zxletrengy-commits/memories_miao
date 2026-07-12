@@ -21,7 +21,8 @@
       </button>
     </div>
   </div>
-  <audio id="bgm" src="assets/bgm.mp3" loop></audio>
+  <audio id="bgm"></audio>
+  <script>window._pageTracks = ["黎明深雪","霜天雪霁","冷调交熔"];</script>
 
   <div class="scaled-page">
 
@@ -33,10 +34,13 @@
         <div class="card-nebula"></div>
 
         <!-- 左上四角星 -->
-        <svg class="card-star-tl" viewBox="0 0 28 28">
+        <svg class="card-star tl" viewBox="0 0 28 28">
           <path d="M14 0l4 10 10 4-10 4-4 10-4-10L0 14l10-4z" fill="rgba(255,255,255,.80)"/>
           <path d="M14 2l3.2 8.2 8.8 3.8-8.8 3.2L14 26l-3.2-8.8L2 14l8.8-3.8z" fill="rgba(255,255,255,.35)"/>
         </svg>
+
+        <span class="card-stardust"></span>
+        <span class="card-spark"></span>
 
         <!-- 人物立绘 -->
         <div class="card-portrait">

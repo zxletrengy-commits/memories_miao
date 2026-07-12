@@ -130,6 +130,12 @@ const SceneManager = {
       <strong>${decor.icon} ${h}:${m}</strong>
       <span class="time-label">${decor.label}</span>
     `;
+
+    // 顺便更新歌单英文副标
+    var titleEn = document.getElementById('playlistTitleEn');
+    if (titleEn) {
+      titleEn.textContent = tod === 'night' ? "Tonight's Playlist" : "Daylight's Playlist";
+    }
   },
 
   // ---------- 浮尘粒子 ----------

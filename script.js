@@ -4,6 +4,9 @@
 // 咖啡馆场景逻辑已移至 core/managers/
 // ============================================================
 
+// 全局曲目列表（所有页面共享）
+window._musicTracks = ["AKSO医院","Flux画廊","Instrumental","爱，触手可及","白桃汽水","伴星","潮汐","成瘾之痛","春风有信","春日","春天对花所做的事","春游","纯白色救赎","当海湮没于海","第一缕光","雕刻时光","冬日","篝火","光年外絮语","归乡","海的最深处","海灯祝福","海神祭典","海下的月光","画中梦(人鱼的歌声)","集市","霁雪和弦","家人","金沙之海","鲸歌载梦","鲸落城","咖啡时光","冷调交熔","黎明深雪","黎明未至","涟漪","恋与光年","零时午夜","落日","梦境","迷宫","迷途","觅旅","眸色深处","暮色下","你掌心的鱼","暖冬心愿","破影_恋与深空的变奏","奇遇","绮境幻想","晴空广场","燃情漫想","热力心跳","人间缱绻意","人鱼","日落银河","山花寻树","珊瑚石的共鸣","深海的祷歌","深空猎人","深空序曲","深夜偶遇","声浪复燃","盛夏与你与海风","时空引力","拾忆","双影交叠时","霜天雪霁","特别假期","特殊的向导","晚风与诗","万象遇你","危机暗涌","微醺之夜","无尽之夜","无人知晓时","午后","物归原主","昔愿遂心","暇日时光","夏日晴天","相遇","小步调欢喜","心动瞬间","心间雀跃","心灵实验","心祈深处","心晴邂逅","心弦轻跳","星辰指路","雪落之时","雪山的深处","焰色之礼","夜半三分","夜色","夜色晚钟","一幕一生","呓语","萦香入梦","永恒封尘","又见小猫","于深空见证的","欲揽旖旎色","愿景","月眠之夜","云门拥雪","云上轻俏","长恒极光","爪爪乐园","重要的事","祝导","遵命饲养官"];
+
 // ---------- 星空背景 ----------
 function initStarfield() {
   const canvas = document.getElementById('stars');
@@ -253,23 +256,99 @@ function initMusic() {
   }
 }
 
+// ====== 全局音乐系统 ======
+var _musicCurrentTrack = '';
+
+function _musicPickRandom() {
+  // 页面专属曲单优先，没有则用全局曲库
+  var pool = (window._pageTracks && window._pageTracks.length) ? window._pageTracks : (window._musicTracks || ['白桃汽水']);
+  return pool[Math.floor(Math.random() * pool.length)];
+}
+
+function _musicPlayTrack(name) {
+  var audio = document.getElementById('bgm');
+  if (!audio) return;
+  _musicCurrentTrack = name;
+  audio.src = 'assets/music/' + name + '.mp3';
+  audio.play().catch(function(){});
+  _musicUpdateNowPlaying();
+}
+
+function _musicPlayNext() {
+  _musicPlayTrack(_musicPickRandom());
+}
+
+function _musicUpdateNowPlaying() {
+  var audio = document.getElementById('bgm');
+  var btn   = document.getElementById('musicBtn');
+  if (btn && audio) {
+    var label = btn.querySelector('.label');
+    if (audio.paused) { btn.classList.add('off'); if (label) label.textContent = 'OFF'; }
+    else { btn.classList.remove('off'); if (label) label.textContent = 'ON'; }
+  }
+  // 歌单打开的且 UIManager 存在，就重建——让竖条跟上
+  try {
+    var overlay = document.getElementById('playlistOverlay');
+    if (overlay && overlay.classList.contains('open') && typeof UIManager !== 'undefined' && UIManager._rebuildPlaylist) {
+      UIManager._rebuildPlaylist();
+    }
+  } catch (_) {}
+}
+
 function toggleMusic() {
-  const audio = document.getElementById('bgm');
-  const btn   = document.getElementById('musicBtn');
+  var audio = document.getElementById('bgm');
+  var btn   = document.getElementById('musicBtn');
   if (!audio || !btn) return;
 
   if (audio.paused) {
-    audio.play();
+    var name = _musicCurrentTrack || _musicPickRandom();
+    _musicPlayTrack(name);
     btn.classList.remove('off');
     btn.querySelector('.label').textContent = 'ON';
-    localStorage.setItem('bgm-on', 'on');
+    try { localStorage.setItem('bgm-on', 'on'); } catch(_) {}
   } else {
     audio.pause();
     btn.classList.add('off');
     btn.querySelector('.label').textContent = 'OFF';
-    localStorage.setItem('bgm-on', 'off');
+    try { localStorage.setItem('bgm-on', 'off'); } catch(_) {}
   }
 }
+
+function _musicInit() {
+  var audio = document.getElementById('bgm');
+  if (!audio || audio.dataset._musicInited) return;
+  audio.dataset._musicInited = '1';
+
+  audio.addEventListener('ended', _musicPlayNext);
+
+  // 从 src 提取曲名
+  audio.addEventListener('loadedmetadata', function() {
+    var m = (audio.src || '').match(/\/music\/(.+)\.mp3/);
+    if (m) { _musicCurrentTrack = decodeURIComponent(m[1]); _musicUpdateNowPlaying(); }
+  });
+
+  // 读取上次状态
+  var btn = document.getElementById('musicBtn');
+  try {
+    if (localStorage.getItem('bgm-on') === 'off') {
+      if (btn) { btn.classList.add('off'); btn.querySelector('.label').textContent = 'OFF'; }
+      return;
+    }
+  } catch(_) {}
+
+  // 自动播放
+  _musicPlayTrack(_musicPickRandom());
+  if (btn) { btn.classList.remove('off'); if (btn.querySelector('.label')) btn.querySelector('.label').textContent = 'ON'; }
+}
+
+// 页面加载时自动初始化音乐
+(function() {
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', _musicInit);
+  } else {
+    _musicInit();
+  }
+})();
 
 // ---------- 全屏 ----------
 function enterFullscreen() {

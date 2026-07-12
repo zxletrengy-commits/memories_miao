@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Inter:wght@300;400&family=Noto+Serif+SC:wght@300;400&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css?v=20260713c">
 </head>
 <body class="cafe-body fade-in">
 
@@ -23,16 +23,43 @@
       <button class="fullscreen-btn" id="fullscreenBtn" onclick="enterFullscreen()" style="display:none;">
         <span class="icon">⛶</span>
       </button>
-      <button class="music-btn" id="musicBtn" onclick="toggleMusic()">
+      <button class="music-btn" id="musicBtn" onclick="UIManager.togglePlaylist()">
         <span class="icon">♪</span>
         <span class="label">ON</span>
       </button>
     </div>
   </div>
 
-  <audio id="bgm" src="" loop></audio>
-  <script>window._musicTracks = ["track1","track2","track3","track4","track5"];</script>
+  <!-- 歌单弹出层 -->
+  <div class="playlist-overlay" id="playlistOverlay" onclick="if(event.target===this) UIManager.closePlaylist()">
+    <div class="playlist-panel" id="playlistPanel">
+      <div class="playlist-header">
+        <span class="playlist-hd-line"></span>
+        <span class="playlist-hd-icon">✦</span>
+        <span class="playlist-hd-line"></span>
+      </div>
+      <div class="playlist-title-group">
+        <h3 class="playlist-title-cn">喵咪留声机</h3>
+        <span class="playlist-title-en" id="playlistTitleEn">Playlist</span>
+      </div>
+      <!-- 漂浮粒子 -->
+      <span class="pl-dust d1"></span>
+      <span class="pl-dust d2"></span>
+      <span class="pl-dust d3"></span>
+      <span class="pl-dust d4"></span>
+      <span class="pl-dust d5"></span>
+      <span class="pl-dust d6"></span>
+      <span class="pl-dust d7"></span>
+      <span class="pl-dust d8"></span>
+      <span class="pl-dust d9"></span>
+      <span class="pl-dust d10"></span>
 
+      <div class="playlist-list" id="playlistList"></div>
+    </div>
+  </div>
+
+  <audio id="bgm"></audio>
+  
   <!-- ====== 喵喵屋场景 ====== -->
   <div class="cafe-scene" id="cafeScene">
 
@@ -88,7 +115,7 @@
     <div class="bubble-layer" id="bubbleLayer"></div>
   </div>
 
-  <script src="script.js?v=2"></script>
+  <script src="script.js?v=20260713"></script>
 
   <!-- World 全局状态 -->
   <script src="core/world.js"></script>
@@ -98,7 +125,7 @@
 
   <!-- Managers -->
   <script src="core/managers/SceneManager.js?v=20260712"></script>
-  <script src="core/managers/UIManager.js"></script>
+  <script src="core/managers/UIManager.js?v=20260713c"></script>
   <script src="core/managers/MemoryManager.js"></script>
   <script src="core/managers/CharacterPixel.js"></script>
   <script src="core/managers/CharacterManager.js"></script>
@@ -115,7 +142,6 @@
 
       // 初始化各 Manager
       SceneManager.init();
-      UIManager.initMusic();
       MemoryManager.init();
       await CharacterManager.init(charKeys);
 

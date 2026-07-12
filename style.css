@@ -365,7 +365,7 @@ body[data-character] .fullscreen-btn {
 .scaled-page {
   transform: scale(0.78);
   transform-origin: top center;
-  height: 128vh;
+  height: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -551,17 +551,108 @@ body[data-character] .fullscreen-btn {
   opacity: .85;
 }
 
-/* ---- 左上 SVG 星光 ---- */
-.card-star-tl {
+/* ---- 边缘星尘 ---- */
+.card-stardust {
   position: absolute;
-  top: clamp(12px, calc(var(--card-w) * 0.04), 18px);
-  left: clamp(14px, calc(var(--card-w) * 0.045), 20px);
-  width: clamp(12px, calc(var(--card-w) * 0.04), 18px);
-  height: clamp(12px, calc(var(--card-w) * 0.04), 18px);
+  inset: 0;
+  z-index: 9;
+  pointer-events: none;
+}
+.card-stardust::before,
+.card-stardust::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  animation: dustTwinkle 4s ease-in-out infinite;
+}
+.card-stardust::before {
+  /* 散布在卡片上半 + 右边 */
+  top: 10px; right: 18px;
+  width: 2px; height: 2px;
+  background: rgba(255,255,255,.38);
+  box-shadow:
+    -40px 2px 0 0 rgba(255,255,255,.22),
+    -100px -4px 0 1px rgba(255,255,255,.16),
+    -200px 0 0 -1px rgba(255,255,255,.10),
+    -280px 6px 0 0 rgba(255,255,255,.08),
+    0 60px 0 0 rgba(255,255,255,.20),
+    -80px 80px 0 -1px rgba(255,255,255,.12),
+    -180px 90px 0 0 rgba(255,255,255,.08);
+}
+.card-stardust::after {
+  /* 散布在卡片下半 + 左边 */
+  bottom: 20px; left: 16px;
+  width: 2px; height: 2px;
+  background: rgba(255,255,255,.28);
+  animation-delay: 1.5s;
+  box-shadow:
+    0 -40px 0 0 rgba(255,255,255,.16),
+    -4px -90px 0 -1px rgba(255,255,255,.10),
+    0 -140px 0 0 rgba(255,255,255,.08),
+    380px -10px 0 0 rgba(255,255,255,.18),
+    360px -80px 0 -1px rgba(255,255,255,.10),
+    390px -130px 0 0 rgba(255,255,255,.06);
+}
+
+@keyframes dustTwinkle {
+  0%, 100% { opacity: .45; }
+  50% { opacity: 1; }
+}
+
+/* 亮芒 — 更闪的碎粒，分布在上/下/右边缘 */
+.card-spark {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  pointer-events: none;
+}
+.card-spark::before,
+.card-spark::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  animation: sparkFlicker 2.8s ease-in-out infinite;
+}
+.card-spark::before {
+  top: 4%; right: 6%;
+  width: 3px; height: 3px;
+  background: rgba(255,255,255,.65);
+  box-shadow:
+    -120px 4px 0 0 rgba(255,255,255,.55),
+    0 55px 0 0 rgba(255,255,255,.50),
+    -200px 70px 0 -1px rgba(255,255,255,.42);
+}
+.card-spark::after {
+  bottom: 6%; left: 12%;
+  width: 3px; height: 3px;
+  background: rgba(255,255,255,.50);
+  animation-delay: 1.1s;
+  box-shadow:
+    -4px -70px 0 0 rgba(255,255,255,.48),
+    380px -20px 0 0 rgba(255,255,255,.44),
+    370px -100px 0 0 rgba(255,255,255,.38);
+}
+
+@keyframes sparkFlicker {
+  0%, 100% { opacity: .5; }
+  30%  { opacity: 1; }
+  60%  { opacity: .55; }
+  85%  { opacity: .9; }
+}
+
+/* ---- 四角星芒 ---- */
+.card-star {
+  position: absolute;
+  width: clamp(11px, calc(var(--card-w) * 0.038), 16px);
+  height: clamp(11px, calc(var(--card-w) * 0.038), 16px);
   z-index: 8;
   pointer-events: none;
-  filter: drop-shadow(0 0 3px rgba(255,255,255,.85));
   animation: starPulse 3s ease-in-out infinite;
+}
+.card-star.tl {
+  top: clamp(12px, calc(var(--card-w) * 0.04), 18px);
+  left: clamp(14px, calc(var(--card-w) * 0.045), 20px);
+  filter: drop-shadow(0 0 3px rgba(255,255,255,.85));
 }
 
 @keyframes starPulse {
@@ -814,7 +905,7 @@ body[data-character="qiyu"] .fragment .icon {
 .card-glass:hover .card-portrait img {
   filter: brightness(1.05);
 }
-.card-glass:hover .card-star-tl { animation-duration: 1.5s; }
+.card-glass:hover .card-star { animation-duration: 1.5s; }
 
 /* ====== 祁煜 · 紫色调 ====== */
 .memory-card[data-char="qiyu"] .card-glass {
@@ -1334,6 +1425,274 @@ body[data-character="qiyu"] .fragment .icon {
   font-weight: 600;
   letter-spacing: 1px;
   color: #7a6350;
+}
+
+
+/* ---- 歌单弹出 ---- */
+.playlist-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: rgba(5,5,16,.70);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  justify-content: center;
+  align-items: flex-end;
+}
+.playlist-overlay.open { display: flex; }
+
+.playlist-panel {
+  width: min(420px, 100vw);
+  max-height: 65vh;
+  background:
+    linear-gradient(180deg, rgba(170,180,255,.10), transparent 25%),
+    rgba(22,26,48,.68);
+  backdrop-filter: blur(28px);
+  -webkit-backdrop-filter: blur(28px);
+  border-radius: 24px 24px 0 0;
+  border: 1px solid rgba(255,255,255,.12);
+  border-bottom: none;
+  box-shadow: 0 20px 60px rgba(80,60,40,.08);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: slideUp .3s ease-out;
+}
+@keyframes slideUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+.playlist-header {
+  display: flex; align-items: center; justify-content: center;
+  padding: 18px 20px 10px;
+  gap: 8px;
+  position: relative;
+  flex-shrink: 0;
+}
+.playlist-hd-line {
+  display: block;
+  width: 120px; height: 1px;
+  background: linear-gradient(to right, transparent, rgba(175,168,255,.30), transparent);
+}
+.cafe-body .playlist-hd-line {
+  background: linear-gradient(to right, transparent, rgba(247,242,235,.65), transparent);
+}
+.cafe-body.topbar-night .playlist-hd-line {
+  background: linear-gradient(to right, transparent, rgba(180,195,235,.28), transparent);
+}
+.cafe-body.topbar-night .playlist-hd-icon {
+  color: #F3F1FF;
+  filter: drop-shadow(0 0 8px rgba(210,220,255,.35));
+}
+.playlist-hd-icon {
+  font-size: 14px;
+  color: rgba(255,255,255,.50);
+  flex-shrink: 0;
+}
+.cafe-body .playlist-hd-icon { color: rgba(247,242,235,.75); }
+
+/* 歌单双行标题 */
+.playlist-title-group {
+  text-align: center;
+  padding: 6px 20px 8px;
+  flex-shrink: 0;
+}
+.playlist-title-cn {
+  margin: 0;
+  font-family: "Noto Serif SC", serif;
+  font-size: 18px;
+  font-weight: 400;
+  letter-spacing: 2px;
+  color: rgba(255,255,255,.80);
+}
+.cafe-body .playlist-title-cn { color: rgba(248,246,242,.75); }
+.cafe-body.topbar-night .playlist-title-cn { color: rgba(205,214,244,.75); }
+.playlist-title-en {
+  font-family: "Cormorant Garamond", serif;
+  font-size: 12px;
+  letter-spacing: 2px;
+  color: rgba(255,255,255,.35);
+  display: block;
+  margin-top: 2px;
+}
+.cafe-body .playlist-title-en { color: rgba(248,246,242,.30); }
+.cafe-body.topbar-night .playlist-title-en { color: rgba(205,214,244,.30); }
+
+.playlist-list {
+  flex: 1; overflow-y: auto; overflow-x: hidden;
+  padding: 8px 0;
+  margin: 4px 14px 14px;
+  border-radius: 16px;
+  background: rgba(255,255,255,.04);
+  border: 1px solid rgba(255,255,255,.05);
+}
+.cafe-body .playlist-list {
+  background: rgba(247,242,235,.35);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border-color: rgba(220,205,190,.45);
+}
+.cafe-body.topbar-night .playlist-list {
+  background: rgba(255,255,255,.03);
+  border-color: rgba(255,255,255,.05);
+}
+.playlist-list::-webkit-scrollbar { width: 4px; }
+.playlist-list::-webkit-scrollbar-track { background: transparent; }
+.playlist-list::-webkit-scrollbar-thumb { background: rgba(220,180,150,.45); border-radius: 2px; }
+.playlist-list::-webkit-scrollbar-thumb:hover { background: rgba(220,180,150,.80); }
+.cafe-body .playlist-list::-webkit-scrollbar-thumb { background: rgba(220,180,150,.45); }
+.cafe-body .playlist-list::-webkit-scrollbar-thumb:hover { background: rgba(220,180,150,.80); }
+.cafe-body.topbar-night .playlist-list::-webkit-scrollbar-thumb { background: rgba(184,200,255,.50); }
+.cafe-body.topbar-night .playlist-list::-webkit-scrollbar-thumb:hover { background: rgba(184,200,255,.80); }
+
+.playlist-item {
+  padding: 11px 40px 11px 26px;
+  font-size: 13px;
+  color: rgba(255,255,255,.48);
+  cursor: pointer;
+  transition: color .25s;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  position: relative;
+}
+/* 左竖条胶囊 — 当前播放时显示 */
+.now-bar {
+  display: none;
+  position: absolute;
+  left: 8px; top: 50%; transform: translateY(-50%);
+  width: 1px; height: 16px;
+  border-radius: 999px;
+  background: rgba(184,200,255,.70);
+  box-shadow: 0 0 2px rgba(184,200,255,.25);
+}
+.playlist-item.active .now-bar { display: block; }
+.cafe-body .now-bar { background: rgba(90,60,40,.55); box-shadow: 0 0 2px rgba(90,60,40,.15); }
+.cafe-body.topbar-night .now-bar { background: rgba(184,200,255,.70); box-shadow: 0 0 2px rgba(184,200,255,.25); }
+
+/* 悬浮小星 — hover 时左端出现 */
+.playlist-item::before {
+  content: '✦';
+  position: absolute;
+  left: 12px; top: 50%; transform: translateY(-50%);
+  font-size: 9px;
+  color: rgba(184,200,255,0);
+  transition: color .25s;
+  pointer-events: none;
+}
+/* 播放中图标 — 右边 */
+.playlist-item::after {
+  content: '';
+  display: none;
+  position: absolute;
+  right: 14px; top: 50%; transform: translateY(-50%);
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: rgba(184,200,255,.60);
+  box-shadow: 0 0 6px rgba(184,200,255,.35);
+}
+/* active 状态：渐变底 + 左侧小竖条(.now-bar) + 星星 + 右侧播放点 */
+.playlist-item.active {
+  color: #fff;
+  background: linear-gradient(90deg, rgba(170,180,255,.14), rgba(170,180,255,.04), transparent);
+  border-radius: 14px;
+  margin-left: 18px;
+  margin-right: 18px;
+}
+.playlist-item.active::before { color: #B8C8FF; }
+.playlist-item.active::after { display: block; }
+
+/* hover */
+.playlist-item:hover { color: #fff; background: transparent; }
+.playlist-item:hover::before { color: rgba(184,200,255,.65); }
+/* active + hover */
+.playlist-item.active:hover { background: linear-gradient(90deg, rgba(170,180,255,.18), rgba(170,180,255,.06), transparent); }
+
+/* 喵喵屋白天暖白底 + 暖棕字 */
+.cafe-body .playlist-overlay { background: rgba(40,30,20,.50); }
+.cafe-body .playlist-panel {
+  background:
+    linear-gradient(180deg, rgba(255,251,246,.82), rgba(252,245,236,.72));
+  backdrop-filter: blur(28px);
+  -webkit-backdrop-filter: blur(28px);
+  border-color: rgba(180,150,110,.15);
+}
+.cafe-body .playlist-item { color: rgba(120,90,70,.55); }
+.cafe-body .playlist-item:hover { color: rgba(100,70,50,.95); background: rgba(255,252,246,.08); }
+.cafe-body .playlist-item:hover::before { color: rgba(90,60,40,.40); }
+.cafe-body .playlist-item.active {
+  color: rgba(90,60,40,.95);
+  background: rgba(248,236,220,.58);
+  border: 1px solid rgba(218,195,170,.45);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.7);
+  border-radius: 14px;
+  margin-left: 18px;
+  margin-right: 18px;
+}
+.cafe-body .playlist-item.active::before { color: rgba(90,60,40,.65); }
+.cafe-body .playlist-item.active::after { background: rgba(90,60,40,.40); box-shadow: 0 0 6px rgba(90,60,40,.20); }
+.cafe-body .playlist-item.active:hover {
+  background: linear-gradient(90deg, rgba(200,170,145,.24), rgba(200,170,145,.08), transparent);
+}
+.cafe-body .playlist-header { color: rgba(120,90,70,.60); }
+.cafe-body .playlist-title-cn { color: rgba(100,70,50,.80); }
+.cafe-body .playlist-title-en { color: #9B7260; }
+
+/* 喵喵屋夜间冷蓝底 + 冷白字 */
+.cafe-body.topbar-night .playlist-overlay { background: rgba(5,5,16,.75); }
+.cafe-body.topbar-night .playlist-panel {
+  background:
+    linear-gradient(180deg, rgba(170,180,255,.10), transparent 25%),
+    rgba(22,26,48,.68);
+  border-color: rgba(255,255,255,.12);
+  box-shadow: 0 20px 60px rgba(20,22,40,.20);
+}
+.cafe-body.topbar-night .playlist-item { color: rgba(205,214,244,.42); }
+.cafe-body.topbar-night .playlist-item:hover { color: rgba(205,214,244,.95); background: rgba(255,255,255,.04); }
+.cafe-body.topbar-night .playlist-item:hover::before { color: rgba(184,200,255,.60); }
+.cafe-body.topbar-night .playlist-item.active {
+  color: rgba(205,214,244,.95);
+  background: rgba(28,32,52,.55);
+  border: 1px solid rgba(160,180,220,.35);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.12);
+  border-radius: 14px;
+  margin-left: 18px;
+  margin-right: 18px;
+}
+.cafe-body.topbar-night .playlist-item.active::before { color: #B8C8FF; }
+.cafe-body.topbar-night .playlist-item.active::after { background: rgba(184,200,255,.55); box-shadow: 0 0 6px rgba(184,200,255,.30); }
+.cafe-body.topbar-night .playlist-item.active:hover {
+  background: rgba(35,40,56,.60);
+}
+.cafe-body.topbar-night .playlist-header { color: rgba(205,214,244,.65); }
+.cafe-body.topbar-night .playlist-title-cn { color: rgba(205,214,244,.80); }
+.cafe-body.topbar-night .playlist-title-en { color: rgba(205,214,244,.55); }
+
+/* ---- 弹窗漂浮粒子 ---- */
+.pl-dust {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(247,242,235,.65);
+  pointer-events: none;
+  z-index: 5;
+  animation: plFloat linear infinite;
+}
+.pl-dust.d1 { width: 2px; height: 2px; top: 12%; left: 20%; animation-duration: 18s; animation-delay: 0s; }
+.pl-dust.d2 { width: 3px; height: 3px; top: 30%; left: 75%; animation-duration: 22s; animation-delay: -5s; }
+.pl-dust.d3 { width: 2px; height: 2px; top: 55%; left: 12%; animation-duration: 26s; animation-delay: -10s; }
+.pl-dust.d4 { width: 3px; height: 3px; top: 70%; left: 65%; animation-duration: 20s; animation-delay: -15s; }
+.pl-dust.d5  { width: 2px; height: 2px; top: 45%; left: 88%; animation-duration: 24s; animation-delay: -3s; }
+.pl-dust.d6  { width: 3px; height: 3px; top: 18%; left: 48%; animation-duration: 21s; animation-delay: -7s; }
+.pl-dust.d7  { width: 2px; height: 2px; top: 62%; left: 32%; animation-duration: 28s; animation-delay: -12s; }
+.pl-dust.d8  { width: 3px; height: 3px; top: 78%; left: 82%; animation-duration: 19s; animation-delay: -2s; }
+.pl-dust.d9  { width: 2px; height: 2px; top: 38%; left: 56%; animation-duration: 25s; animation-delay: -9s; }
+.pl-dust.d10 { width: 2px; height: 2px; top: 85%; left: 42%; animation-duration: 23s; animation-delay: -6s; }
+
+@keyframes plFloat {
+  0%, 100%   { opacity: .20; transform: translate(0, 0); }
+  25%        { opacity: .40; transform: translate(8px, -10px); }
+  50%        { opacity: .25; transform: translate(-4px, -18px); }
+  75%        { opacity: .45; transform: translate(10px, -6px); }
 }
 
 .top-bar-time .time-label {
