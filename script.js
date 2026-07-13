@@ -135,7 +135,6 @@ function goTo(url) {
   setTimeout(() => { window.location.href = url; }, 350);
 }
 
-// ---------- memory 页 BACK 记忆 ----------
 var cafeBackUrl = 'cafe.html?char=lishen';
 (function() {
   var char = document.body.getAttribute('data-character');
