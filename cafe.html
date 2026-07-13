@@ -125,7 +125,7 @@
 
   <!-- Managers -->
   <script src="core/managers/SceneManager.js?v=20260712"></script>
-  <script src="core/managers/UIManager.js?v=20260713c"></script>
+  <script src="core/managers/UIManager.js?v=20260714"></script>
   <script src="core/managers/MemoryManager.js"></script>
   <script src="core/managers/CharacterPixel.js"></script>
   <script src="core/managers/CharacterManager.js"></script>
@@ -169,5 +169,14 @@
       }
     });
   </script>
+
+  <!-- 占位弹窗 -->
+  <div class="modal-overlay" id="placeholderOverlay" onclick="if(event.target===this) UIManager.closePlaceholder()">
+    <div class="modal-box">
+      <h3 class="modal-title" id="placeholderTitle"></h3>
+      <p class="modal-text" id="placeholderText"></p>
+      <button class="enter-btn small modal-close" onclick="UIManager.closePlaceholder()">好，我等 ✨</button>
+    </div>
+  </div>
 </body>
 </html>

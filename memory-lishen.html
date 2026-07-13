@@ -26,38 +26,44 @@
     .folder-cover.open { transform:rotateX(78deg);opacity:.08;cursor:default;pointer-events:none; }
 
     .flip-hint {
-      text-align:center;margin-top:6px;opacity:.35;font-size:10px;
-      letter-spacing:1.5px;color:#F8F6F2;transition:opacity .35s ease;pointer-events:none;
+      text-align:center;margin-top:8px;font-size:13px;
+      letter-spacing:2px;color:#F8F6F2;pointer-events:none;
+      animation:flipHintBlink 2.8s ease-in-out infinite;
+      transition:opacity .35s ease;
     }
-    .folder-cover.open ~ .flip-hint { opacity:0; }
+    .folder-cover.open ~ .flip-hint { opacity:0; animation:none; }
+    @keyframes flipHintBlink {
+      0%,100%{opacity:.55}
+      50%{opacity:.18}
+    }
 
     .anchor-thumb {
       position:absolute;top:-26px;left:0;z-index:18;
       display:flex;align-items:center;gap:10px;
       opacity:0;transform:translateY(-8px) scale(.85);pointer-events:none;
       transition:opacity .15s ease, transform .15s ease;
-      cursor:pointer;
     }
     .folder-cover.open ~ .anchor-thumb {
       opacity:1;transform:translateY(0) scale(1);pointer-events:auto;
       transition:opacity .5s cubic-bezier(.34,1.56,.64,1) .55s,
                 transform .5s cubic-bezier(.34,1.56,.64,1) .55s;
     }
-    .anchor-thumb:hover { transform:translateY(-2px) scale(1.03); }
     .anchor-thumb-avatar {
       position:relative;width:52px;height:52px;border-radius:50%;overflow:hidden;
       border:1.5px solid rgba(180,210,245,.40);
       box-shadow:0 0 24px rgba(180,205,240,.35), 0 0 48px rgba(165,195,235,.14),
                  0 8px 20px rgba(10,8,30,.45), 0 0 0 1px rgba(255,255,255,.06);
-      flex-shrink:0;
+      flex-shrink:0;cursor:pointer;
+      transition:transform .3s cubic-bezier(.34,1.56,.64,1);
     }
+    .anchor-thumb-avatar:hover { transform:translateY(-2px) scale(1.03); }
     .anchor-thumb-avatar::after {
       content:'↻';position:absolute;inset:0;
       display:flex;align-items:center;justify-content:center;
       background:rgba(0,0,0,.35);color:rgba(255,255,255,.70);font-size:16px;
       opacity:0;transition:opacity .25s ease;pointer-events:none;border-radius:50%;
     }
-    .anchor-thumb:hover .anchor-thumb-avatar::after { opacity:1; }
+    .anchor-thumb-avatar:hover::after { opacity:1; }
     .anchor-thumb-avatar img { width:100%;height:100%;object-fit:cover;object-position:center top; }
     .anchor-thumb-info { display:flex;flex-direction:column;gap:2px; padding-top:6px; }
     .anchor-thumb-name {
@@ -252,8 +258,8 @@
 
         <div class="flip-hint">点击翻开档案</div>
 
-        <div class="anchor-thumb" onclick="triggerAvatarUpload()" oncontextmenu="resetAvatar(event)" title="点击更换头像 | 右键恢复默认">
-          <div class="anchor-thumb-avatar"><img id="anchorAvatar" src="assets/thing/Li 1.png?v=20260712" alt="黎深"></div>
+        <div class="anchor-thumb">
+          <div class="anchor-thumb-avatar" onclick="triggerAvatarUpload()" oncontextmenu="resetAvatar(event)" title="点击更换头像 | 右键恢复默认"><img id="anchorAvatar" src="assets/thing/Li 1.png?v=20260712" alt="黎深"></div>
           <div class="anchor-thumb-info">
             <span class="anchor-thumb-name">黎深</span>
             <span class="anchor-thumb-en">Zayne</span>
@@ -325,6 +331,12 @@
     <div class="modal-box">
       <h3 class="modal-title"></h3>
       <p class="modal-text"></p>
+      <div class="frag-pills" id="fragPills"></div>
+      <div class="frag-preview" id="fragPreview"></div>
+      <div class="frag-upload-row">
+        <input type="file" id="fragFileInput" style="display:none" onchange="handleFragUpload(event)">
+        <button class="frag-upload-btn" onclick="triggerFragUpload()">＋ 上传文件</button>
+      </div>
       <button class="enter-btn small modal-close" onclick="closeFragment()">关闭</button>
     </div>
   </div>
@@ -376,5 +388,17 @@
     function resetAvatar(e){e.preventDefault();e.stopPropagation();try{localStorage.removeItem(AVATAR_KEY);}catch(_){}applyAvatar(AVATAR_DEFAULT);}
     (function(){try{var s=localStorage.getItem(AVATAR_KEY);if(s)applyAvatar(s);}catch(_){}})();
   </script>
+
+  <!-- 茉莉花瓣 -->
+  <template id="jasminePetal">
+    <svg viewBox="0 0 48 48"><g transform="translate(24,24)">
+      <ellipse cx="0" cy="-10" rx="5.5" ry="10.5" fill="rgba(245,240,250,0.50)"/>
+      <ellipse cx="0" cy="-10" rx="5.5" ry="10.5" fill="rgba(242,236,248,0.46)" transform="rotate(72)"/>
+      <ellipse cx="0" cy="-10" rx="5.5" ry="10.5" fill="rgba(244,238,250,0.46)" transform="rotate(144)"/>
+      <ellipse cx="0" cy="-10" rx="5.5" ry="10.5" fill="rgba(240,234,247,0.46)" transform="rotate(216)"/>
+      <ellipse cx="0" cy="-10" rx="5.5" ry="10.5" fill="rgba(243,237,249,0.46)" transform="rotate(288)"/>
+      <circle cx="0" cy="0" r="3" fill="rgba(252,248,240,0.48)"/>
+    </g></svg>
+  </template>
 </body>
 </html>

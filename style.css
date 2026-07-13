@@ -386,6 +386,7 @@ body[data-character] .fullscreen-btn {
   align-items: center;
   justify-content: flex-start;
   padding-top: 60px;
+  position: relative; z-index: 3;
 }
 
 .select-header {
@@ -893,6 +894,9 @@ body[data-character] .fullscreen-btn {
 body[data-character="qiyu"] .fragment .icon {
   color: #D4729A;
 }
+body[data-character="qiyu"] .modal-title {
+  color: #E8A8C0;
+}
 
 .card-name-en {
   font-family: "Cormorant Garamond", "Cinzel", "Playfair Display", serif;
@@ -1122,6 +1126,88 @@ body[data-character="qiyu"] .fragment .icon {
   line-height: 1.8;
   opacity: 0.85;
   margin-bottom: 20px;
+}
+/* ---------- 回忆碎片上传药丸 ---------- */
+.frag-pills {
+  display: flex; flex-wrap: wrap; gap: 6px;
+  margin: 0 0 14px; min-height: 0; justify-content: center;
+}
+.frag-pill {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 5px 10px 5px 12px;
+  background: rgba(255,255,255,.025);
+  border: 1px solid rgba(255,255,255,.07);
+  border-radius: 20px;
+  font-size: 11px; color: rgba(210,220,235,.62);
+  cursor: pointer; letter-spacing: .5px;
+  transition: all .25s cubic-bezier(.34,1.56,.64,1);
+  font-family: "PingFang SC","Microsoft YaHei",sans-serif;
+}
+.frag-pill:hover {
+  background: rgba(255,255,255,.05);
+  border-color: rgba(255,255,255,.16);
+  color: rgba(230,240,252,.88);
+  transform: translateY(-1px) scale(1.03);
+  box-shadow: 0 2px 10px rgba(0,0,0,.15), 0 0 14px rgba(180,200,235,.05);
+}
+.frag-pill-del {
+  background: none; border: none; color: rgba(255,255,255,.22);
+  font-size: 14px; cursor: pointer; padding: 0 2px; line-height: 1;
+  transition: color .2s; font-family: inherit;
+}
+.frag-pill-del:hover { color: rgba(255,135,135,.60); }
+.frag-upload-row {
+  display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 14px;
+}
+.frag-upload-btn {
+  padding: 6px 14px;
+  background: rgba(255,255,255,.012);
+  border: 1px dashed rgba(255,255,255,.09);
+  border-radius: 16px;
+  color: rgba(195,210,225,.38);
+  font-size: 11px; cursor: pointer;
+  letter-spacing: 1px; transition: all .25s ease;
+  font-family: inherit;
+}
+.frag-upload-btn:hover {
+  border-color: rgba(200,215,240,.32);
+  color: rgba(210,230,250,.68);
+  background: rgba(200,215,240,.025);
+}
+body[data-character="qiyu"] .frag-upload-btn {
+  color: rgba(235,195,215,.42);
+  border-color: rgba(235,195,215,.12);
+}
+body[data-character="qiyu"] .frag-upload-btn:hover {
+  border-color: rgba(240,185,210,.40);
+  color: rgba(248,210,228,.72);
+  background: rgba(245,200,220,.03);
+}
+.frag-preview { margin-bottom: 10px; }
+.frag-preview-inner {
+  position: relative; display: flex; flex-direction: column; align-items: center;
+  gap: 8px;
+}
+.frag-preview-media {
+  max-width: 100%; max-height: 280px; border-radius: 12px;
+  object-fit: contain; box-shadow: 0 0 20px rgba(0,0,0,.35), 0 0 40px rgba(180,200,235,.06);
+}
+.frag-preview-audio-label {
+  font-size: 12px; color: rgba(210,220,235,.55); letter-spacing: 1px;
+}
+.frag-preview-audio { max-width: 100%; }
+.frag-preview-close {
+  position: absolute; top: -6px; right: -6px;
+  width: 22px; height: 22px; border-radius: 50%;
+  background: rgba(20,20,40,.75); border: 1px solid rgba(255,255,255,.10);
+  color: rgba(255,255,255,.50); font-size: 13px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all .2s ease; font-family: inherit; line-height: 1;
+}
+.frag-preview-close:hover {
+  background: rgba(40,40,60,.85);
+  border-color: rgba(255,255,255,.22);
+  color: rgba(255,255,255,.80);
 }
 /* ---------- 3D 翻转卡片 ---------- */
 .flip-card-wrapper {
@@ -2534,4 +2620,48 @@ body[data-character="qiyu"] .fragment .icon {
     width: 53%;
     max-width: none;
   }
+  .modal-box {
+    padding: 28px 18px;
+    border-radius: 16px;
+  }
+  .modal-title { font-size: 17px; margin-bottom: 12px; }
+  .modal-text { font-size: 13px; line-height: 1.7; margin-bottom: 16px; }
+  .frag-pill { font-size: 10px; padding: 4px 8px 4px 10px; }
+  .frag-upload-btn { font-size: 10px; padding: 5px 10px; }
+  .frag-preview-media { max-height: 200px; }
+  .frag-preview-close { width: 20px; height: 20px; font-size: 12px; top: -4px; right: -4px; }
+}
+/* ---------- 飘落花瓣 ---------- */
+.falling-petal {
+  position: fixed; top: -50px; pointer-events: none; z-index: 50;
+  will-change: transform, opacity;
+  filter: drop-shadow(0 0 3px rgba(235,225,245,0.16));
+}
+body[data-character="qiyu"] .falling-petal {
+  filter: drop-shadow(0 0 3px rgba(248,200,218,0.18));
+}
+.falling-petal.behind { z-index: 2; }
+.falling-petal.sway {
+  animation: petalSway linear infinite;
+}
+.falling-petal.spin {
+  animation: petalSwaySpin linear infinite;
+}
+@keyframes petalSway {
+  0%   { transform: translateY(0) translateX(0); opacity: 0; }
+  8%   { opacity: var(--po); }
+  25%  { transform: translateY(25vh) translateX(12px); opacity: calc(var(--po) * 0.85); }
+  50%  { transform: translateY(50vh) translateX(-8px); opacity: calc(var(--po) * 0.65); }
+  75%  { transform: translateY(75vh) translateX(10px); opacity: calc(var(--po) * 0.35); }
+  92%  { opacity: 0.02; }
+  100% { transform: translateY(102vh) translateX(4px); opacity: 0; }
+}
+@keyframes petalSwaySpin {
+  0%   { transform: translateY(0) translateX(0) rotate(0deg); opacity: 0; }
+  8%   { opacity: var(--po); }
+  25%  { transform: translateY(25vh) translateX(12px) rotate(100deg); opacity: calc(var(--po) * 0.85); }
+  50%  { transform: translateY(50vh) translateX(-8px) rotate(220deg); opacity: calc(var(--po) * 0.65); }
+  75%  { transform: translateY(75vh) translateX(10px) rotate(310deg); opacity: calc(var(--po) * 0.35); }
+  92%  { opacity: 0.02; }
+  100% { transform: translateY(102vh) translateX(4px) rotate(380deg); opacity: 0; }
 }

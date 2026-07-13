@@ -399,17 +399,153 @@ function showFullscreenBtn() {
   }
 })();
 
-// ---------- 回忆碎片弹窗 ----------
+// ---------- 回忆碎片弹窗 + 上传药丸 ----------
+var fragCurrentKey = null;
+
 function openFragment(el) {
-  const overlay = document.getElementById('fragOverlay');
+  var overlay = document.getElementById('fragOverlay');
   if (!overlay) return;
-  overlay.querySelector('.modal-title').textContent = el.dataset.title || '';
-  overlay.querySelector('.modal-text').textContent  = el.dataset.text  || '';
+
+  var title = el.dataset.title || '';
+  var char = document.body.dataset.character || '';
+  fragCurrentKey = 'frag-' + char + '-' + title;
+
+  overlay.querySelector('.modal-title').textContent = title;
+  overlay.querySelector('.modal-text').textContent = el.dataset.text || '';
+
+  // 上传类型：专属语音 / 🎵 音乐项 = MP3，其余 = 图片 + 视频
+  var label = (el.textContent || el.innerText || '').trim();
+  var isAudio = (title === '专属语音' || label.indexOf('🎵') === 0);
+  var fileInput = document.getElementById('fragFileInput');
+  if (fileInput) {
+    fileInput.accept = isAudio
+      ? 'audio/mp3,audio/mpeg'
+      : 'image/png,image/jpeg,image/gif,video/mp4,video/webm';
+  }
+
+  renderFragPills();
   overlay.classList.add('show');
 }
 
+function renderFragPills() {
+  var container = document.getElementById('fragPills');
+  if (!container || !fragCurrentKey) return;
+
+  var pills = [];
+  try { pills = JSON.parse(localStorage.getItem(fragCurrentKey) || '[]'); } catch (e) {}
+
+  container.innerHTML = pills.map(function (p, i) {
+    return '<span class="frag-pill" onclick="previewFragPill(' + i + ')" title="点击预览">'
+      + escHtml(p.title)
+      + '<button class="frag-pill-del" onclick="event.stopPropagation();deleteFragPill(' + i + ')">&times;</button>'
+      + '</span>';
+  }).join('');
+}
+
+function triggerFragUpload() {
+  var fi = document.getElementById('fragFileInput');
+  if (fi) fi.click();
+}
+
+function handleFragUpload(e) {
+  var file = e.target.files[0];
+  if (!file) return;
+
+  var defaultTitle = file.name.replace(/\.[^.]+$/, '');
+  var title = prompt('为这个文件取个标题：', defaultTitle);
+  if (!title || !title.trim()) { e.target.value = ''; return; }
+
+  var reader = new FileReader();
+  reader.onload = function (ev) {
+    var mime = file.type;
+    var type = mime.indexOf('video/') === 0 ? 'video'
+      : mime.indexOf('audio/') === 0 ? 'audio'
+      : 'image';
+
+    var pill = { title: title.trim(), type: type, data: ev.target.result, mime: mime };
+
+    var pills = [];
+    try { pills = JSON.parse(localStorage.getItem(fragCurrentKey) || '[]'); } catch (e) {}
+
+    pills.push(pill);
+
+    try {
+      localStorage.setItem(fragCurrentKey, JSON.stringify(pills));
+    } catch (e) {
+      alert('文件太大了，localStorage 放不下 😢\n试试小一点的图片或音频吧。');
+      e.target.value = '';
+      return;
+    }
+
+    renderFragPills();
+    e.target.value = '';
+  };
+  reader.readAsDataURL(file);
+}
+
+function previewFragPill(idx) {
+  var pills = [];
+  try { pills = JSON.parse(localStorage.getItem(fragCurrentKey) || '[]'); } catch (e) {}
+  var pill = pills[idx];
+  if (!pill) return;
+
+  var preview = document.getElementById('fragPreview');
+  if (!preview) return;
+  preview.innerHTML = '';
+
+  var wrap = document.createElement('div');
+  wrap.className = 'frag-preview-inner';
+
+  var closeBtn = document.createElement('button');
+  closeBtn.className = 'frag-preview-close';
+  closeBtn.textContent = '×';
+  closeBtn.onclick = function () { preview.innerHTML = ''; };
+
+  if (pill.type === 'image') {
+    var img = document.createElement('img');
+    img.src = pill.data;
+    img.alt = pill.title;
+    img.className = 'frag-preview-media';
+    wrap.appendChild(img);
+  } else if (pill.type === 'video') {
+    var v = document.createElement('video');
+    v.src = pill.data;
+    v.controls = true;
+    v.autoplay = true;
+    v.className = 'frag-preview-media';
+    wrap.appendChild(v);
+  } else if (pill.type === 'audio') {
+    var label = document.createElement('span');
+    label.className = 'frag-preview-audio-label';
+    label.textContent = pill.title;
+    var a = document.createElement('audio');
+    a.src = pill.data;
+    a.controls = true;
+    a.autoplay = true;
+    a.className = 'frag-preview-audio';
+    wrap.appendChild(label);
+    wrap.appendChild(a);
+  }
+
+  wrap.appendChild(closeBtn);
+  preview.appendChild(wrap);
+}
+
+function deleteFragPill(idx) {
+  if (!confirm('删除「' + fragCurrentKey + '」的这个记忆碎片？')) return;
+  var pills = [];
+  try { pills = JSON.parse(localStorage.getItem(fragCurrentKey) || '[]'); } catch (e) {}
+  pills.splice(idx, 1);
+  localStorage.setItem(fragCurrentKey, JSON.stringify(pills));
+  renderFragPills();
+}
+
+function escHtml(s) {
+  return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
 function closeFragment() {
-  const overlay = document.getElementById('fragOverlay');
+  var overlay = document.getElementById('fragOverlay');
   if (overlay) overlay.classList.remove('show');
 }
 
@@ -419,5 +555,57 @@ document.addEventListener('DOMContentLoaded', () => {
   initMusic();
   initFlipCard();
   initLoadingBar();
+  initPetals();
   // cafe.html 由 core/managers/ 自行初始化，不在这里处理
 });
+
+// ---------- 飘落花瓣 ----------
+function initPetals() {
+  var char = document.body.dataset.character;
+  var templateId = null;
+  if (char === 'lishen') templateId = 'jasminePetal';
+  else if (char === 'qiyu') templateId = 'shellPetal';
+  if (!templateId) return;
+
+  var template = document.getElementById(templateId);
+  if (!template) return;
+
+  // 固定分配：前 3 中间背后、左 3 右 3
+  var slots = [
+    'mid','mid','mid',
+    'left','left','left',
+    'right','right','right'
+  ];
+  for (var i = 0; i < slots.length; i++) {
+    var petal = document.createElement('div');
+    petal.className = 'falling-petal';
+
+    // ~1/3 会自转，其余纯摇曳
+    var spins = Math.random() < 0.35;
+    petal.classList.add(spins ? 'spin' : 'sway');
+    petal.appendChild(template.content.cloneNode(true));
+
+    // 大小：小 16px ~ 大 32px
+    var size = 16 + Math.random() * 16;
+    petal.style.width = size + 'px';
+    petal.style.height = size + 'px';
+
+    // 位置分配
+    if (slots[i] === 'mid') {
+      petal.style.left = (32 + Math.random() * 36) + '%';   // 中间 32%~68%，从卡片后飘
+      petal.classList.add('behind');
+    } else if (slots[i] === 'left') {
+      petal.style.left = (Math.random() * 26) + '%';        // 左侧 0%~26%
+    } else {
+      petal.style.left = (74 + Math.random() * 26) + '%';   // 右侧 74%~100%
+    }
+
+    petal.style.animationDuration = (14 + Math.random() * 16) + 's';
+    petal.style.animationDelay = Math.random() * 10 + 's';
+
+    var po = 0.30 + Math.random() * 0.20;
+    petal.style.setProperty('--po', po);
+
+    document.body.appendChild(petal);
+  }
+}

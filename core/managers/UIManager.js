@@ -39,6 +39,10 @@ const UIManager = {
       <path d="M797.7472 910.336H227.6352A156.0576 156.0576 0 0 1 71.68 754.432V266.9056a156.0576 156.0576 0 0 1 155.9552-155.8528h570.112a156.0576 156.0576 0 0 1 155.904 155.8528v487.5264a156.0576 156.0576 0 0 1-155.904 155.904zM227.6352 172.4928A94.5152 94.5152 0 0 0 133.12 266.9056v487.5264a94.5664 94.5664 0 0 0 94.5152 94.464h570.112a94.6176 94.6176 0 0 0 94.464-94.464V266.9056a94.5664 94.5664 0 0 0-94.464-94.4128z" fill="currentColor"/>
       <path d="M318.1568 432.9984a88.6272 88.6272 0 1 1 88.6272-88.6272 88.7808 88.7808 0 0 1-88.6272 88.6272z m0-115.8144a27.1872 27.1872 0 1 0 27.1872 27.1872A27.1872 27.1872 0 0 0 318.1568 317.44zM210.944 732.672a30.72 30.72 0 0 1-18.688-55.0912L341.1968 563.2a30.72 30.72 0 0 1 40.96 3.1744l51.2 53.7088 184.7296-180.2752a30.72 30.72 0 0 1 43.0592 0l172.1344 170.496a30.72 30.72 0 0 1-43.2128 43.6736L639.488 505.0368 454.1952 686.08a30.72 30.72 0 0 1-22.016 8.704 30.72 30.72 0 0 1-21.6576-9.472l-53.8112-56.32-127.0784 97.28a30.4128 30.4128 0 0 1-18.688 6.4z" fill="currentColor"/>
     </svg>`;
+    galleryIcon.addEventListener('click', (e) => {
+      e.stopPropagation();
+      UIManager.showPlaceholder('gallery');
+    });
 
     // 日记（预留）
     const diaryIcon = document.createElement('button');
@@ -53,6 +57,10 @@ const UIManager = {
       <path d="M206.1824 213.6576v99.328h49.6128c29.1328 0 54.4256 16.384 67.1744 40.3968 79.0528-58.368 142.8992-136.1408 184.4224-226.304H292.7616c-47.8208 0-86.5792 38.7584-86.5792 86.5792zM255.7952 354.304H179.2512a34.7648 34.7648 0 0 0-34.7648 34.7648c0 8.96 3.4816 16.9984 9.0112 23.1424 60.8256-9.0112 105.2672-25.344 133.3248-38.5536-5.6832-11.4176-17.408-19.3536-31.0272-19.3536z" fill="currentColor"/>
       <path d="M255.7952 631.808H179.2512a34.7648 34.7648 0 0 0-34.7648 34.7648c0 3.328 0.6144 6.5024 1.4848 9.5232 60.5696-5.632 109.2096-16.64 140.5952-25.344-5.7344-11.1616-17.3056-18.944-30.7712-18.944z" fill="currentColor"/>
     </svg>`;
+    diaryIcon.addEventListener('click', (e) => {
+      e.stopPropagation();
+      UIManager.showPlaceholder('diary');
+    });
 
     icons.appendChild(memoryIcon);
     icons.appendChild(galleryIcon);
@@ -223,5 +231,27 @@ const UIManager = {
       if (audio.paused) { btn.classList.add('off'); if (label) label.textContent = 'OFF'; }
       else { btn.classList.remove('off'); if (label) label.textContent = 'ON'; }
     }
+  },
+
+  // ---------- 占位弹窗 ----------
+  showPlaceholder(type) {
+    var overlay = document.getElementById('placeholderOverlay');
+    var title = document.getElementById('placeholderTitle');
+    var text = document.getElementById('placeholderText');
+    if (!overlay || !title || !text) return;
+
+    if (type === 'gallery') {
+      title.textContent = '📷 相纸还在暗房里';
+      text.innerHTML = '光已经进去了。<br>只是还没显影——啪嗒，啪嗒——再等等。';
+    } else if (type === 'diary') {
+      title.textContent = '📖 全是白页';
+      text.innerHTML = '纸在等第一滴墨。<br>笔也在等。……然后它们一起看向了你。';
+    }
+    overlay.classList.add('show');
+  },
+
+  closePlaceholder() {
+    var overlay = document.getElementById('placeholderOverlay');
+    if (overlay) overlay.classList.remove('show');
   }
 };

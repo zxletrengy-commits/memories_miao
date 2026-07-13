@@ -27,11 +27,16 @@
     .folder-cover.open { transform: rotateX(78deg); opacity: 0.08; cursor: default; pointer-events: none; }
 
     .flip-hint {
-      text-align: center; margin-top: 6px; opacity: .35;
-      font-size: 10px; letter-spacing: 1.5px; color: #F8F6F2;
-      transition: opacity 0.35s ease; pointer-events: none;
+      text-align: center; margin-top: 8px; font-size: 13px;
+      letter-spacing: 2px; color: #F8F6F2; pointer-events: none;
+      animation: flipHintBlink 2.8s ease-in-out infinite;
+      transition: opacity 0.35s ease;
     }
-    .folder-cover.open ~ .flip-hint { opacity: 0; }
+    .folder-cover.open ~ .flip-hint { opacity: 0; animation: none; }
+    @keyframes flipHintBlink {
+      0%, 100% { opacity: .55; }
+      50% { opacity: .18; }
+    }
 
     /* 锚点 — 基本信息 */
     .anchor-thumb {
@@ -39,28 +44,28 @@
       display: flex; align-items: center; gap: 10px;
       opacity: 0; transform: translateY(-8px) scale(0.85); pointer-events: none;
       transition: opacity 0.15s ease, transform 0.15s ease;
-      cursor: pointer;
     }
     .folder-cover.open ~ .anchor-thumb {
       opacity: 1; transform: translateY(0) scale(1); pointer-events: auto;
       transition: opacity 0.5s cubic-bezier(0.34,1.56,0.64,1) 0.55s,
                   transform 0.5s cubic-bezier(0.34,1.56,0.64,1) 0.55s;
     }
-    .anchor-thumb:hover { transform: translateY(-2px) scale(1.03); }
     .anchor-thumb-avatar {
       position: relative; width: 52px; height: 52px; border-radius: 50%; overflow: hidden;
       border: 1.5px solid rgba(255,190,215,.40);
       box-shadow: 0 0 24px rgba(255,180,205,.35), 0 0 48px rgba(255,165,195,.14),
                   0 8px 20px rgba(10,8,30,.45), 0 0 0 1px rgba(255,255,255,.06);
-      flex-shrink: 0;
+      flex-shrink: 0; cursor: pointer;
+      transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
     }
+    .anchor-thumb-avatar:hover { transform: translateY(-2px) scale(1.03); }
     .anchor-thumb-avatar::after {
       content:'↻'; position:absolute; inset:0;
       display:flex; align-items:center; justify-content:center;
       background:rgba(0,0,0,.35); color:rgba(255,255,255,.70); font-size:16px;
       opacity:0; transition:opacity .25s ease; pointer-events:none; border-radius:50%;
     }
-    .anchor-thumb:hover .anchor-thumb-avatar::after { opacity:1; }
+    .anchor-thumb-avatar:hover::after { opacity:1; }
     .anchor-thumb-avatar img { width:100%; height:100%; object-fit:cover; object-position:center top; }
     .anchor-thumb-info { display:flex; flex-direction:column; gap:2px; padding-top:6px; }
     .anchor-thumb-name {
@@ -260,8 +265,8 @@
 
         <div class="flip-hint">点击翻开档案</div>
 
-        <div class="anchor-thumb" onclick="triggerAvatarUpload()" oncontextmenu="resetAvatar(event)" title="点击更换头像 | 右键恢复默认">
-          <div class="anchor-thumb-avatar"><img id="anchorAvatar" src="assets/thing/Qi 1.png?v=20260712" alt="祁煜"></div>
+        <div class="anchor-thumb">
+          <div class="anchor-thumb-avatar" onclick="triggerAvatarUpload()" oncontextmenu="resetAvatar(event)" title="点击更换头像 | 右键恢复默认"><img id="anchorAvatar" src="assets/thing/Qi 1.png?v=20260712" alt="祁煜"></div>
           <div class="anchor-thumb-info">
             <span class="anchor-thumb-name">祁煜</span>
             <span class="anchor-thumb-en">Rafayel</span>
@@ -333,6 +338,12 @@
     <div class="modal-box">
       <h3 class="modal-title"></h3>
       <p class="modal-text"></p>
+      <div class="frag-pills" id="fragPills"></div>
+      <div class="frag-preview" id="fragPreview"></div>
+      <div class="frag-upload-row">
+        <input type="file" id="fragFileInput" style="display:none" onchange="handleFragUpload(event)">
+        <button class="frag-upload-btn" onclick="triggerFragUpload()">＋ 上传文件</button>
+      </div>
       <button class="enter-btn small modal-close" onclick="closeFragment()">关闭</button>
     </div>
   </div>
@@ -385,5 +396,10 @@
     function resetAvatar(e){e.preventDefault();e.stopPropagation();try{localStorage.removeItem(AVATAR_KEY);}catch(_){}applyAvatar(AVATAR_DEFAULT);}
     (function(){try{var s=localStorage.getItem(AVATAR_KEY);if(s)applyAvatar(s);}catch(_){}})();
   </script>
+
+  <template id="shellPetal">
+    <svg viewBox="0 0 1358 1024"><path d="M1028.10392 325.969481s-25.160967-108.244998-129.937355-125.249313c0 0-42.476914-183.51111-235.011828-133.094332 0 0-134.679595-152.158134-291.105744 0 0 0-175.964175-59.616722-235.14732 133.243373 0 0-135.871929 15.676488-136.847476 189.581176s213.942736 349.73337 249.753417 366.141518c0 0 29.442531 32.843394 147.781725 69.507678 92.243328 28.575379 181.668411 18.819915 228.724973 2.872443 47.815321-16.259106 91.254232-27.396594 159.081803-72.380121-0.17614 0.121943 289.18175-172.427819 242.707805-430.622422zM660.051957 185.95148s78.734721-78.829566 136.440998 14.90418c55.10482 89.330238-107.133959 476.025976-207.479742 507.378952 0 0 97.974663-262.476168 71.038744-522.296682z m-237.233905 13.738944c12.275625-99.66832 85.089321-104.261517 85.089321-104.261517s140.153494-44.807386 102.269777 294.276269-92.649806 324.667248-92.649806 324.667249c-77.84047-27.952113-107.039115-414.945934-94.709292-514.614255z m-183.809194 1.165236c57.719826-93.909886 136.440998-14.904181 136.440998-14.90418-26.92237 259.806965 71.025195 522.283133 71.025195 522.283132-100.169642-31.352976-262.367774-418.048714-207.466193-507.378952zM99.30249 401.980801c-10.216138-132.647206 86.281656-99.66832 86.281656-99.668319 7.09981 162.076188 166.791329 396.017625 166.940371 396.017625-63.220824-23.372465-243.005888-163.702099-253.222027-296.349306z m583.97289 296.349306s159.542478-233.941437 166.79133-396.017625c0 0 96.646836-32.978887 86.430697 99.668319S746.482655 674.957642 683.28893 698.330107z" fill="rgba(245,200,218,0.55)"/></svg>
+  </template>
+
 </body>
 </html>
