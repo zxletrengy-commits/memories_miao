@@ -137,26 +137,35 @@ function goTo(url) {
 
 var cafeBackUrl = 'cafe.html?char=lishen';
 (function() {
-  var char = document.body.getAttribute('data-character');
-  if (!char) return;
+  var pageChar = document.body.getAttribute('data-character');
+  if (!pageChar) return;
 
-  var cafeChar = '';
+  var cafeChar = null; // null = 还没确定
+  var fromBothCafe = false;
   try {
     var ref = document.referrer;
-    if (ref) {
+    if (ref && ref.indexOf('cafe.html') !== -1) {
       var m = ref.match(/[?&]char=([^&]*)/);
-      if (m) cafeChar = decodeURIComponent(m[1]);
+      if (m) {
+        cafeChar = decodeURIComponent(m[1]); // 单人喵喵屋
+      } else {
+        fromBothCafe = true; // 双人喵喵屋
+      }
     }
   } catch (_) {}
 
-  if (!cafeChar) {
-    try { cafeChar = localStorage.getItem('cafe-last-char') || ''; } catch (_) {}
+  if (fromBothCafe) {
+    cafeBackUrl = 'cafe.html'; // 不带 char，回双人
+    try { localStorage.setItem('cafe-last-char', ''); } catch (_) {}
+  } else {
+    if (!cafeChar) cafeChar = pageChar;
+    if (!cafeChar) {
+      try { cafeChar = localStorage.getItem('cafe-last-char') || ''; } catch (_) {}
+    }
+    if (!cafeChar) cafeChar = 'lishen';
+    try { localStorage.setItem('cafe-last-char', cafeChar); } catch (_) {}
+    cafeBackUrl = 'cafe.html?char=' + encodeURIComponent(cafeChar);
   }
-  if (!cafeChar) cafeChar = char;
-  if (!cafeChar) cafeChar = 'lishen';
-  try { localStorage.setItem('cafe-last-char', cafeChar); } catch (_) {}
-
-  cafeBackUrl = 'cafe.html?char=' + encodeURIComponent(cafeChar);
 })();
 
 // ---------- 入口页 Enter 过渡动画 ----------
