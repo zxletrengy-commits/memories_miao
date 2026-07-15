@@ -349,7 +349,6 @@ function _musicInit() {
 
   // 自动播放
   _musicPlayTrack(_musicPickRandom());
-  if (btn) { btn.classList.remove('off'); if (btn.querySelector('.label')) btn.querySelector('.label').textContent = 'ON'; }
 }
 
 // 页面加载时自动初始化音乐
@@ -402,6 +401,83 @@ function showFullscreenBtn() {
 // ---------- 回忆碎片弹窗 + 上传药丸 ----------
 var fragCurrentKey = null;
 
+// --- IndexedDB 存储层（替代 localStorage，支持大文件）---
+var fragDB = (function () {
+  var _db = null;
+  var _ready = null;
+
+  function openDB() {
+    if (_ready) return _ready;
+    _ready = new Promise(function (resolve, reject) {
+      var req = indexedDB.open('memories_frags', 1);
+      req.onupgradeneeded = function (e) {
+        var db = e.target.result;
+        if (!db.objectStoreNames.contains('pills')) {
+          db.createObjectStore('pills');
+        }
+      };
+      req.onsuccess = function (e) { _db = e.target.result; resolve(); };
+      req.onerror = function (e) { reject(e); };
+    });
+    // 首次打开时，把旧 localStorage 数据迁移到 IndexedDB
+    _ready.then(function () { _migrateFromLocalStorage(); });
+    return _ready;
+  }
+
+  function _migrateFromLocalStorage() {
+    var migratedKey = '_frag_migrated';
+    if (localStorage.getItem(migratedKey)) return;
+    var keys = Object.keys(localStorage).filter(function (k) { return k.indexOf('frag-') === 0; });
+    if (!keys.length) { localStorage.setItem(migratedKey, '1'); return; }
+    var db = _db;
+    var tx = db.transaction('pills', 'readwrite');
+    var store = tx.objectStore('pills');
+    var count = 0;
+    keys.forEach(function (k) {
+      try {
+        var pills = JSON.parse(localStorage.getItem(k) || '[]');
+        if (pills.length) { store.put(pills, k); count++; }
+      } catch (e) {}
+    });
+    tx.oncomplete = function () {
+      localStorage.setItem(migratedKey, '1');
+      if (count > 0) { keys.forEach(function (k) { localStorage.removeItem(k); }); }
+    };
+  }
+
+  function get(key) {
+    return openDB().then(function () {
+      return new Promise(function (resolve, reject) {
+        var tx = _db.transaction('pills', 'readonly');
+        var store = tx.objectStore('pills');
+        var req = store.get(key);
+        req.onsuccess = function () { resolve(req.result || []); };
+        req.onerror = function () { reject(req.error); };
+      });
+    });
+  }
+
+  function set(key, value) {
+    return openDB().then(function () {
+      return new Promise(function (resolve, reject) {
+        var tx = _db.transaction('pills', 'readwrite');
+        var store = tx.objectStore('pills');
+        var req = store.put(value, key);
+        req.onsuccess = function () { resolve(); };
+        req.onerror = function (e) {
+          if (e.target.error && e.target.error.name === 'QuotaExceededError') {
+            reject(new Error('QUOTA_EXCEEDED'));
+          } else {
+            reject(e.target.error);
+          }
+        };
+      });
+    });
+  }
+
+  return { get: get, set: set };
+})();
+
 function openFragment(el) {
   var overlay = document.getElementById('fragOverlay');
   if (!overlay) return;
@@ -431,15 +507,16 @@ function renderFragPills() {
   var container = document.getElementById('fragPills');
   if (!container || !fragCurrentKey) return;
 
-  var pills = [];
-  try { pills = JSON.parse(localStorage.getItem(fragCurrentKey) || '[]'); } catch (e) {}
-
-  container.innerHTML = pills.map(function (p, i) {
-    return '<span class="frag-pill" onclick="previewFragPill(' + i + ')" title="点击预览">'
-      + escHtml(p.title)
-      + '<button class="frag-pill-del" onclick="event.stopPropagation();deleteFragPill(' + i + ')">&times;</button>'
-      + '</span>';
-  }).join('');
+  fragDB.get(fragCurrentKey).then(function (pills) {
+    container.innerHTML = pills.map(function (p, i) {
+      return '<span class="frag-pill" onclick="previewFragPill(' + i + ')" title="点击预览">'
+        + escHtml(p.title)
+        + '<button class="frag-pill-del" onclick="event.stopPropagation();deleteFragPill(' + i + ')">&times;</button>'
+        + '</span>';
+    }).join('');
+  }).catch(function () {
+    container.innerHTML = '<span style="color:#999;font-size:12px;">加载失败</span>';
+  });
 }
 
 function triggerFragUpload() {
@@ -464,80 +541,82 @@ function handleFragUpload(e) {
 
     var pill = { title: title.trim(), type: type, data: ev.target.result, mime: mime };
 
-    var pills = [];
-    try { pills = JSON.parse(localStorage.getItem(fragCurrentKey) || '[]'); } catch (e) {}
-
-    pills.push(pill);
-
-    try {
-      localStorage.setItem(fragCurrentKey, JSON.stringify(pills));
-    } catch (e) {
-      alert('文件太大了，localStorage 放不下 😢\n试试小一点的图片或音频吧。');
+    fragDB.get(fragCurrentKey).then(function (pills) {
+      pills.push(pill);
+      return fragDB.set(fragCurrentKey, pills);
+    }).then(function () {
+      renderFragPills();
       e.target.value = '';
-      return;
-    }
-
-    renderFragPills();
-    e.target.value = '';
+    }).catch(function (err) {
+      if (err && err.message === 'QUOTA_EXCEEDED') {
+        alert('磁盘空间不足，浏览器 IndexedDB 存不下了 😢\n试试清理一些旧文件再上传。');
+      } else {
+        alert('文件太大了，存不进去 😢\n试试小一点的图片或音频吧。');
+      }
+      e.target.value = '';
+    });
   };
   reader.readAsDataURL(file);
 }
 
 function previewFragPill(idx) {
-  var pills = [];
-  try { pills = JSON.parse(localStorage.getItem(fragCurrentKey) || '[]'); } catch (e) {}
-  var pill = pills[idx];
-  if (!pill) return;
+  fragDB.get(fragCurrentKey).then(function (pills) {
+    var pill = pills[idx];
+    if (!pill) return;
 
-  var preview = document.getElementById('fragPreview');
-  if (!preview) return;
-  preview.innerHTML = '';
+    var preview = document.getElementById('fragPreview');
+    if (!preview) return;
+    preview.innerHTML = '';
 
-  var wrap = document.createElement('div');
-  wrap.className = 'frag-preview-inner';
+    var wrap = document.createElement('div');
+    wrap.className = 'frag-preview-inner';
 
-  var closeBtn = document.createElement('button');
-  closeBtn.className = 'frag-preview-close';
-  closeBtn.textContent = '×';
-  closeBtn.onclick = function () { preview.innerHTML = ''; };
+    var closeBtn = document.createElement('button');
+    closeBtn.className = 'frag-preview-close';
+    closeBtn.textContent = '×';
+    closeBtn.onclick = function () { preview.innerHTML = ''; };
 
-  if (pill.type === 'image') {
-    var img = document.createElement('img');
-    img.src = pill.data;
-    img.alt = pill.title;
-    img.className = 'frag-preview-media';
-    wrap.appendChild(img);
-  } else if (pill.type === 'video') {
-    var v = document.createElement('video');
-    v.src = pill.data;
-    v.controls = true;
-    v.autoplay = true;
-    v.className = 'frag-preview-media';
-    wrap.appendChild(v);
-  } else if (pill.type === 'audio') {
-    var label = document.createElement('span');
-    label.className = 'frag-preview-audio-label';
-    label.textContent = pill.title;
-    var a = document.createElement('audio');
-    a.src = pill.data;
-    a.controls = true;
-    a.autoplay = true;
-    a.className = 'frag-preview-audio';
-    wrap.appendChild(label);
-    wrap.appendChild(a);
-  }
+    if (pill.type === 'image') {
+      var img = document.createElement('img');
+      img.src = pill.data;
+      img.alt = pill.title;
+      img.className = 'frag-preview-media';
+      wrap.appendChild(img);
+    } else if (pill.type === 'video') {
+      var v = document.createElement('video');
+      v.src = pill.data;
+      v.controls = true;
+      v.autoplay = true;
+      v.className = 'frag-preview-media';
+      wrap.appendChild(v);
+    } else if (pill.type === 'audio') {
+      var label = document.createElement('span');
+      label.className = 'frag-preview-audio-label';
+      label.textContent = pill.title;
+      var a = document.createElement('audio');
+      a.src = pill.data;
+      a.controls = true;
+      a.autoplay = true;
+      a.className = 'frag-preview-audio';
+      wrap.appendChild(label);
+      wrap.appendChild(a);
+    }
 
-  wrap.appendChild(closeBtn);
-  preview.appendChild(wrap);
+    wrap.appendChild(closeBtn);
+    preview.appendChild(wrap);
+  });
 }
 
 function deleteFragPill(idx) {
   if (!confirm('删除「' + fragCurrentKey + '」的这个记忆碎片？')) return;
-  var pills = [];
-  try { pills = JSON.parse(localStorage.getItem(fragCurrentKey) || '[]'); } catch (e) {}
-  pills.splice(idx, 1);
-  localStorage.setItem(fragCurrentKey, JSON.stringify(pills));
-  renderFragPills();
+  fragDB.get(fragCurrentKey).then(function (pills) {
+    pills.splice(idx, 1);
+    return fragDB.set(fragCurrentKey, pills);
+  }).then(function () {
+    renderFragPills();
+  }).catch(function () {
+    alert('删除失败，请重试 😢');
+  });
 }
 
 function escHtml(s) {
